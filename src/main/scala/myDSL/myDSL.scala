@@ -2,6 +2,7 @@ package myDSL
 
 import com.sun.jdi.InvalidTypeException
 
+import java.util.NoSuchElementException
 import scala.util.Random
 
 object myDSL:
@@ -14,32 +15,61 @@ object myDSL:
   type BasicType = Any
 
   enum Exp:
-    case Value(input: BasicType)
-    case Var(name: String)
-    case CreateSet(args: Any*)
-    case Assign(varName: String, value: Exp)
-    case Insert(set: Exp, args: Any*)
-    case Delete(set: Exp, args: Any*)
-    case Union(set1: Exp, set2: Exp)
-    case Intersection(set1: Exp, set2: Exp)
-    case Diff(set1: Exp, set2: Exp)
-    case SymmetricDiff(set1: Exp, set2: Exp)
-    case Product(set1: Exp, set2: Exp)
-    case Scope(scopeName: String, exp: Exp)
-    case AnonScope(exp: Exp)
-    case SetMacro(macroName: String, exp: Exp)
-    case GetMacro(macroName: String)
+    case Value(input: BasicType) // to pass in values
+    case Var(name: String) // to retrieve variables by name froms scope
+    case DeclareVar(varName: String, value: Exp) // to delcare variables in given scope
+    case Assign(varName: String, value: Exp)// to assign/re-assign values to an existing variable
+    case CreateSet(args: Any*) // to create a set with some values
+    case Insert(set: Exp, args: Any*) // to insert into existing set
+    case Delete(set: Exp, args: Any*) //to delete items from an existing set
+    case Union(set1: Exp, set2: Exp) //to perform Union operation on two sets
+    case Intersection(set1: Exp, set2: Exp) //to perform Intersection operation on two sets
+    case Diff(set1: Exp, set2: Exp) //to perform Set Difference operation on two sets
+    case SymmetricDiff(set1: Exp, set2: Exp) //to perform Symmetric Difference operation on two sets
+    case Product(set1: Exp, set2: Exp) //to perform Cartesian Product on two sets
+    case Scope(scopeName: String, exp: Exp) //to define/evaluate expressions in a user-defined named scope
+    case AnonScope(exp: Exp) //to define expressions in a user-defined  un-named scope
+    case SetMacro(macroName: String, exp: Exp) //to define macros
+    case GetMacro(macroName: String) // to fetch/evaluate macro expressions
 
-
+    //attribute scope allows switching to different scopes
     def eval(scope: scala.collection.mutable.Map[String, Any] = bindingScope): BasicType =
       this match {
         case Value(i) => i
-        case Var(name) => scope(name)
-        case Assign(varName: String, value: Exp) =>
-          scope += varName -> value.eval()
-        //          scope(varName)
+        case Var(name) =>
+          scope.get(name) match {
+            case None =>
+            // moving to outer-scope(if available) when variable is not found in current scope
+            scope.get("parent") match {
+                case Some(parentScope: scala.collection.mutable.Map[String, Any]) => this.eval(parentScope)
+                case None => throw NoSuchElementException()
+              }
 
+            case Some(value) => value
+          }
+
+        case Assign(varName: String, value: Exp) =>
+
+          scope.get(varName) match {
+            // moving to outer-scope(if available) when variable is not found in current scope
+            case None => scope("parent") match {
+              case None => throw Error("Variable could not be assigned: Variable does not exist")
+              case parentScope: scala.collection.mutable.Map[String, Any] =>
+                this.eval(parentScope)
+            }
+            case _: Any => scope += varName -> value.eval()
+
+          }
+        //only allow declaration if variable doesn't already exist
+        case DeclareVar(varName: String, value: Exp) => scope.get(varName) match {
+          case None => scope += varName -> value.eval()
+          case _: Any => throw Error("Variable already exists")
+        }
+
+        //creates and returns a scala.collection.immutable.Set and initializes with any number of Values
         case CreateSet(args*) => Set[Any]() ++ args.map(arg => arg.asInstanceOf[Exp].eval()).toSet
+
+        //insert only when set evaluates to type Set
         case Insert(set: Exp, args*) =>
           val setEval = set.eval()
           setEval match {
@@ -49,6 +79,7 @@ object myDSL:
             case _: Any => throw InvalidTypeException("invalid parameter type: parameter set should evaluate to a Set")
           }
 
+        //delete only when set evaluates to type Set
         case Delete(set: Exp, args*) =>
           val setEval = set.eval()
           setEval match {
@@ -58,6 +89,7 @@ object myDSL:
             case _: Any => throw InvalidTypeException("invalid parameter type: parameter set should evaluate to a Set")
           }
 
+          //only evaluates if both the arguments evaluate to Set
         case Union(set1: Exp, set2: Exp) =>
           (set1.eval(), set2.eval()) match {
             case (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>
@@ -66,6 +98,7 @@ object myDSL:
             case _: Any => throw InvalidTypeException("invalid parameter(s) type")
           }
 
+        //only evaluates if both the arguments evaluate to Set
         case Diff(set1: Exp, set2: Exp) =>
           (set1.eval(), set2.eval()) match {
             case (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>
@@ -74,6 +107,7 @@ object myDSL:
             case _: Any => throw InvalidTypeException("invalid parameter(s) type")
           }
 
+        //only evaluates if both the arguments evaluate to Set
         case Intersection(set1: Exp, set2: Exp) =>
           (set1.eval(), set2.eval()) match {
             case (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>
@@ -82,6 +116,7 @@ object myDSL:
             case _: Any => throw InvalidTypeException("invalid parameter(s) type")
           }
 
+        //only evaluates if both the arguments evaluate to Set
         case SymmetricDiff(set1: Exp, set2: Exp) =>
           (set1.eval(), set2.eval()) match {
             case (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>
@@ -90,6 +125,7 @@ object myDSL:
             case _: Any => throw InvalidTypeException("invalid parameter(s) type")
           }
 
+        //only evaluates if both the arguments evaluate to Set
         case Product(set1: Exp, set2: Exp) =>
           (set1.eval(), set2.eval()) match {
             case (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>
@@ -100,27 +136,32 @@ object myDSL:
 
         case Scope(scopeName, exp) =>
           scope.get(scopeName) match {
+            //creating the scope in case it doesn't exist
             case None =>
-              val newScope: scala.collection.mutable.Map[String, Any] = scala.collection.mutable.Map() ++ scope
-
-              //              newScope ++= scope
-              //              newScope += MACRO_KEY -> scala.collection.mutable.Map[String, Any]()
+              val newScope: scala.collection.mutable.Map[String, Any] = scala.collection.mutable.Map()
+              //adding reference to parent scope
+              newScope += "parent" -> scope
+              //adding map that stores Macro definitions withing the scope
+              newScope += MACRO_KEY -> scala.collection.mutable.Map[String, Any]()
               scope += scopeName -> newScope
 
               exp.eval(newScope)
 
-            case Some(value) =>
-              exp.eval(value.asInstanceOf[scala.collection.mutable.Map[String, Any]])
+
+            case Some(localScope: scala.collection.mutable.Map[String, Any]) =>
+              exp.eval(localScope)
 
           }
 
         case AnonScope(exp) =>
-          val newScope: scala.collection.mutable.Map[String, Any] = scala.collection.mutable.Map() ++ scope
-          scope += (Random.alphanumeric take 10).mkString -> newScope
-          exp.eval(newScope)
+          val newAnonScope: scala.collection.mutable.Map[String, Any] = scala.collection.mutable.Map()
+          newAnonScope += MACRO_KEY -> scala.collection.mutable.Map[String, Any]()
+          newAnonScope += "parent" -> scope
+          //pairing anonymous scope with random key
+          scope += (Random.alphanumeric take 10).mkString -> newAnonScope
+          exp.eval(newAnonScope)
 
-        //scoping with macro
-        //macro duplicates
+
         case SetMacro(macroName, exp: Exp) =>
           scope.get(MACRO_KEY) match {
             case Some(scopeMacroMap) =>
@@ -132,13 +173,14 @@ object myDSL:
           }
 
         case GetMacro(macroName) =>
-          scope.get(MACRO_KEY) match {
-            case Some(scopeMacroMap) =>
-              scopeMacroMap.asInstanceOf[scala.collection.mutable.Map[String, Any]].get(macroName) match {
-                case Some(value) => value.asInstanceOf[Exp].eval()
-                case _: Any => throw Error("Could not evaluate Macro")
+          scope(MACRO_KEY) match {
+            case scopeMacroMap: scala.collection.mutable.Map[String, Any] =>
+              scopeMacroMap(macroName) match {
+                case value: Exp =>
+                  value.eval()
+                case None => throw Error("Could not evaluate Macro")
               }
-            case _: Any => throw Error("Could not find specified macro")
+            case None => throw Error("Could not find specified macro")
           }
 
 
@@ -146,37 +188,11 @@ object myDSL:
 
   @main def runExp(): Unit =
     import Exp.*
-    Assign("a", CreateSet(Value(1),Value(2),Value(3))).eval()
-    Assign("b", CreateSet(Value(3),Value(4),Value(5))).eval()
-
-    println(Product(Var("a"), Var("b")).eval())
-
-    //access outer scope stuff
-    Scope("scope1", Assign("c", CreateSet(Value(7),Value(8),Value(9)))).eval()
-    //TODO test macro input (eval/no eval)
-    SetMacro("four", Value(4)).eval()
-
-    Assign("a", Insert(Var("a"), GetMacro("four"))).eval()
+    DeclareVar("a", CreateSet(Value(1), Value(2), Value(3))).eval()
+    DeclareVar("b", CreateSet(Value(3), Value(4), Value(5))).eval()
 
 
-    AnonScope(Assign("x", Var("a"))).eval()
-    println(Scope("scope1", Var("c")).eval())
-//    println(Insert(Var("a"), Var("b")).eval())
-//    println(GetMacro("one").eval())
 
-//    Scope("s1", SetMacro("two", Value(2))).eval()
-//    println(Scope("s1", GetMacro("two")).eval())
-//    println(GetMacro("two").eval())
-
-//    println(Union(Var("a"), Var("b")).eval())
-//    println(Diff(Var("a"), Var("b")).eval())
-//    println(Diff(Var("b"), Var("a")).eval())
-//    println(Intersection(Var("a"), Var("b")).eval())
-//    println(SymmetricDiff(Var("a"), Var("b")).eval())
-//    println(Product(Var("a"), Var("b")).eval())
-//
-////    println(Var("c").eval())
-//    println(Scope("scope1", Value(1)).eval())
 
 
 

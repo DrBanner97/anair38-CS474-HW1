@@ -1,6 +1,5 @@
 //ThisBuild / version := "0.1.0-SNAPSHOT"
 
-//ThisBuild / scalaVersion := "2.13.8"
 ThisBuild / scalaVersion := "3.1.0"
 
 val scalacticVersion = "3.2.9"

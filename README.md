@@ -11,10 +11,16 @@ Implementation of my Domain Specific Language called myDSL using Scala for writi
   3. Delete
 
 - ### Binary Set Operations:
+
   1. Union
   2. Intersection
   3. Set Difference
   4. Symmetric Difference
   5. Cartesian Product
-- ### Macro
+
+- ### Macros
+  Storing expressions as macros to have them expand and evaluate to expressions when macro-definition is used
 - ### Scopes
+  Storing and assigning variables with the additional ability to separate them into named and anonymous scopes
+
+## Installation

@@ -12,7 +12,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library" scope="PROVIDED">
-      <library name="sbt: sbt-1.6.2">
+      <library name="sbt: sbt-1.5.8">
         <CLASSES>
           <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.15/lib/scala-compiler.jar!/" />
           <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.15/lib/scala-library.jar!/" />
