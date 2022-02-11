@@ -190,6 +190,8 @@ object myDSL:
     import Exp.*
     DeclareVar("a", CreateSet(Value(1), Value(2), Value(3))).eval()
     DeclareVar("b", CreateSet(Value(3), Value(4), Value(5))).eval()
+    Assign("a",Insert(Var("a"), Value(4))).eval()
+    println(Var("a").eval())
 
 
 
