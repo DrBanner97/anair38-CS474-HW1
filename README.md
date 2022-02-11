@@ -1,4 +1,4 @@
-# CS474 Homework 1
+# CS474 Homework 1 (Aditya Nair - anair38)
 
 Implementation of my Domain Specific Language called myDSL using Scala for writing and evaluation Binary Operations on Set
 
