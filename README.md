@@ -14,7 +14,7 @@ to ensure **Scala 3.1.0** is added as library.
 
 ## Instructions to run
 
-> src/test/scala/myDSL/myDSL.scala
+> src/main/scala/myDSL/myDSL.scala
 
 contains all of the code for this project
 
