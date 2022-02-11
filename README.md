@@ -4,13 +4,16 @@ Implementation of my Domain Specific Language called myDSL using Scala for writi
 
 ## Installation
 
-The project works on **Scala 3.1.0** with sbt and Java **openjdk-17**.
-Please ensure sbt is installed on the system before using the project.\
-In IntelliJ also check
 
-> File > Project Structure > Libraries
-
-to ensure **Scala 3.1.0** is added as library.
+The project works on **Scala 3.1.0** with [sbt](https://www.scala-sbt.org/) and Java [**openjdk-17**](https://openjdk.java.net/).
+- Please ensure sbt is installed on the system before using the project.
+- Install [IntelliJ IDEA](https://www.jetbrains.com/idea/)
+- In IntelliJ ensure the [scala plugin](https://plugins.jetbrains.com/plugin/1347-scala) is installed.
+- Once installed, in IntelliJ go to:
+    > File > Project Structure > Libraries
+  
+    and ensure **Scala 3.1.0** is added as library.
+- Download this GitHub repository and open that folder using IntelliJ IDEA
 
 ## Instructions to run
 
@@ -41,7 +44,7 @@ Press the play button next to **myDSLTest** class to run all the test cases
   3. Re-assign variable
 
      ```.scala
-     Assign("a", Value(2))
+     Assign("a", Value(2)).eval()
      ```
 
 - ### Operations on Set:
@@ -62,8 +65,8 @@ Press the play button next to **myDSLTest** class to run all the test cases
   3. Delete
 
      ```.scala
-     Delete(Var("a"), Value(4))
-     Delete(Var("a"), Value(4), Value(1))
+     Delete(Var("a"), Value(4)).eval()
+     Delete(Var("a"), Value(4), Value(1)).eval()
      ```
 
      NOTE: **CreateSet**, **Insert** and **Delete** take the Set as first parameter and accepts any number of valid **Value** to Create/Insert/Delete from set
