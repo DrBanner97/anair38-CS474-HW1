@@ -24,3 +24,21 @@ Implementation of my Domain Specific Language called myDSL using Scala for writi
   Storing and assigning variables with the additional ability to separate them into named and anonymous scopes
 
 ## Installation
+
+The project works on **Scala 3.1.0** with sbt and Java **openjdk-17**.
+Please ensure sbt is installed on the system before using the project.\
+In IntelliJ also check
+
+> File > Project Structure > Libraries
+
+to ensure **Scala 3.1.0** is added as library.
+
+## Instructions to run
+
+> src/test/scala/myDSL/myDSL.scala
+
+contains all of the code for this project
+
+Navigate to the following path to get to the test file
+
+> src/test/scala/myDSLTest.scala

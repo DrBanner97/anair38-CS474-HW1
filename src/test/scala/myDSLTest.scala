@@ -8,26 +8,24 @@ import java.util.NoSuchElementException
 
 class myDSLTest extends AnyFeatureSpec with GivenWhenThen {
 
-
   Feature("Set Creation and modification"){
 
     Scenario("Creating and Assigning a set"){
-      DeclareVar("a", CreateSet(Value(1),Value(2),Value(3))).eval()
-      assert(Var("a").eval() == Set(1,2,3))
-    }
-
-    Scenario("Inserting into set"){
-      Assign("a", Insert(Var("a"), Value(4))).eval()
+      DeclareVar("a", Insert(CreateSet(Value(1),Value(2),Value(3)),Value(4))).eval()
       assert(Var("a").eval() == Set(1,2,3,4))
     }
 
+    Scenario("Inserting into set"){
+      Assign("a", Insert(Var("a"), Value(5))).eval()
+      assert(Var("a").eval() == Set(1,2,3,4,5))
+    }
+
     Scenario("Deleting from set"){
-      Assign("a", Delete(Var("a"), Value(4))).eval()
+      Assign("a", Delete(Var("a"), Value(4), Value(5))).eval()
       assert(Var("a").eval() == Set(1,2,3))
     }
 
   }
-
 
   Feature("Binary Set Operations"){
     Scenario("Union operation"){
@@ -99,13 +97,11 @@ class myDSLTest extends AnyFeatureSpec with GivenWhenThen {
 
       Assign("a", CreateSet(Value(1),Value(2),Value(3))).eval()
 
-      SetMacro("combine_sets", Union(Var("a"),Var("b"))).eval()
-      assert(GetMacro("combine_sets").eval() == Set(1,2,3,4,5))
+      SetMacro("combine_sets", Scope("s1",Union(Var("c"),Var("b")))).eval()
+      assert(Union(Var("a"), GetMacro("combine_sets")).eval() == Set(1,2,3,4,5,6,7,8,9,10))
     }
 
   }
-
-
 
 
 

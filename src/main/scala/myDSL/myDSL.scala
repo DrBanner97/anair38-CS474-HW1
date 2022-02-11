@@ -57,41 +57,41 @@ object myDSL:
               case parentScope: scala.collection.mutable.Map[String, Any] =>
                 this.eval(parentScope)
             }
-            case _: Any => scope += varName -> value.eval()
+            case _: Any => scope += varName -> value.eval(scope)
 
           }
         //only allow declaration if variable doesn't already exist
         case DeclareVar(varName: String, value: Exp) => scope.get(varName) match {
-          case None => scope += varName -> value.eval()
+          case None => scope += varName -> value.eval(scope)
           case _: Any => throw Error("Variable already exists")
         }
 
         //creates and returns a scala.collection.immutable.Set and initializes with any number of Values
-        case CreateSet(args*) => Set[Any]() ++ args.map(arg => arg.asInstanceOf[Exp].eval()).toSet
+        case CreateSet(args*) => Set[Any]() ++ args.map(arg => arg.asInstanceOf[Exp].eval(scope)).toSet
 
         //insert only when set evaluates to type Set
         case Insert(set: Exp, args*) =>
-          val setEval = set.eval()
+          val setEval = set.eval(scope)
           setEval match {
             case immutableSet: Set[Any] =>
-              immutableSet ++ args.map(arg => arg.asInstanceOf[Exp].eval()).toSet
+              immutableSet ++ args.map(arg => arg.asInstanceOf[Exp].eval(scope)).toSet
 
             case _: Any => throw InvalidTypeException("invalid parameter type: parameter set should evaluate to a Set")
           }
 
         //delete only when set evaluates to type Set
         case Delete(set: Exp, args*) =>
-          val setEval = set.eval()
+          val setEval = set.eval(scope)
           setEval match {
             case immutableSet: Set[Any] =>
-              immutableSet -- args.map(arg => arg.asInstanceOf[Exp].eval()).toSet
+              immutableSet -- args.map(arg => arg.asInstanceOf[Exp].eval(scope)).toSet
 
             case _: Any => throw InvalidTypeException("invalid parameter type: parameter set should evaluate to a Set")
           }
 
           //only evaluates if both the arguments evaluate to Set
         case Union(set1: Exp, set2: Exp) =>
-          (set1.eval(), set2.eval()) match {
+          (set1.eval(scope), set2.eval(scope)) match {
             case (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>
               immutableSet1.union(immutableSet2)
 
@@ -100,7 +100,7 @@ object myDSL:
 
         //only evaluates if both the arguments evaluate to Set
         case Diff(set1: Exp, set2: Exp) =>
-          (set1.eval(), set2.eval()) match {
+          (set1.eval(scope), set2.eval(scope)) match {
             case (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>
               immutableSet1.diff(immutableSet2)
 
@@ -109,7 +109,7 @@ object myDSL:
 
         //only evaluates if both the arguments evaluate to Set
         case Intersection(set1: Exp, set2: Exp) =>
-          (set1.eval(), set2.eval()) match {
+          (set1.eval(scope), set2.eval(scope)) match {
             case (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>
               immutableSet1.intersect(immutableSet2)
 
@@ -118,7 +118,7 @@ object myDSL:
 
         //only evaluates if both the arguments evaluate to Set
         case SymmetricDiff(set1: Exp, set2: Exp) =>
-          (set1.eval(), set2.eval()) match {
+          (set1.eval(scope), set2.eval(scope)) match {
             case (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>
               immutableSet1.union(immutableSet2).diff(immutableSet1.intersect(immutableSet2))
 
@@ -127,7 +127,7 @@ object myDSL:
 
         //only evaluates if both the arguments evaluate to Set
         case Product(set1: Exp, set2: Exp) =>
-          (set1.eval(), set2.eval()) match {
+          (set1.eval(scope), set2.eval(scope)) match {
             case (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>
               immutableSet1.flatMap(i1 => immutableSet2.map(i2 => (i1, i2)))
 
@@ -177,7 +177,7 @@ object myDSL:
             case scopeMacroMap: scala.collection.mutable.Map[String, Any] =>
               scopeMacroMap(macroName) match {
                 case value: Exp =>
-                  value.eval()
+                  value.eval(scope)
                 case None => throw Error("Could not evaluate Macro")
               }
             case None => throw Error("Could not find specified macro")
