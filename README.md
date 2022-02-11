@@ -42,3 +42,5 @@ contains all of the code for this project
 Navigate to the following path to get to the test file
 
 > src/test/scala/myDSLTest.scala
+
+Press the play button next to **myDSLTest** class to run all the test cases
