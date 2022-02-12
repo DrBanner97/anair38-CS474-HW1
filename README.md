@@ -4,15 +4,17 @@ Implementation of my Domain Specific Language called myDSL using Scala for writi
 
 ## Installation
 
-
 The project works on **Scala 3.1.0** with [sbt](https://www.scala-sbt.org/) and Java [**openjdk-17**](https://openjdk.java.net/).
+
 - Please ensure sbt is installed on the system before using the project.
 - Install [IntelliJ IDEA](https://www.jetbrains.com/idea/)
 - In IntelliJ ensure the [scala plugin](https://plugins.jetbrains.com/plugin/1347-scala) is installed.
 - Once installed, in IntelliJ go to:
-    > File > Project Structure > Libraries
-  
-    and ensure **Scala 3.1.0** is added as library.
+
+  > File > Project Structure > Libraries
+
+  and ensure **Scala 3.1.0** is added as library.
+
 - Download this GitHub repository and open that folder using IntelliJ IDEA
 
 ## Instructions to run
@@ -147,3 +149,7 @@ Press the play button next to **myDSLTest** class to run all the test cases
     //re-assigning variable a from Anonymous Scope
     AnonScope(Assign("a", Value(42))).eval()
   ```
+
+## Limitations
+
+myDSL uses `Any` as a data type to deal with varying data inputs (String, Int....). This might cause problems by undermining Scala's strongly typed system, as evident with usage of `asInstanceOf` methods and type matching to ensure the input is of a certain data type.
