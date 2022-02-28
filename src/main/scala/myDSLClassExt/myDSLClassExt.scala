@@ -332,3 +332,26 @@ object myDSLClassExt:
         case _:Any => println("something else called implicit")
 
     }
+
+
+    /**
+    CLASS SCOPE MAP STRUCTURE
+    CLASSDEF/INSTANCE: {
+      TYPES: Map(string, string)
+      ACCESS Map(String, String)
+      FIELDS: {variables, instances}
+      METHOD: {
+        m1: {
+          FIELDS: Map(String, Any) contains parameter
+          INSTRUCTIONS: []
+        }
+        constructor : method but with class name
+      }
+      CLASSDEF: structure of CLASSDEF ^^^
+
+
+
+
+
+    }
+    */
