@@ -214,28 +214,28 @@ Press the play button next to **myDSLTest** class to run all the test cases
     - #### DeclareInstance
       declares a variable instance of type a class type
       ```.scala
-        DeclareInstance(class defintion: ClassDef("someClassName"), instance name: "inst1").eval()
+        DeclareInstance(class_defintion: ClassDef("someClassName"), instance_name: "inst1").eval()
       ```
     - #### NewObject
       instantiates a class definition. invokes constructor
       ```.scala
-        NewObject(class definition: ClassDef("someClassName"))
+        NewObject(class_definition: ClassDef("someClassName"))
       ```   
     - #### AssignInstance
       binds instance name to instance
       ```.scala
-        AssignInstance(class instance: NewObject(ClassDef("someClassName")), instance name: "inst1").eval()
+        AssignInstance(class_instance: NewObject(ClassDef("someClassName")), instance_name: "inst1").eval()
       ``` 
     - #### Class Instance operation
         - GetField
           fetching instance variables of an instance
           ```.scala
-            Instance(instance name: "inst1", GetField(variable name:"x")) 
+            Instance(instance_name: "inst1", GetField(variable_name:"x")) 
             // java counterpart: inst1.x
           ```
         - InvokeMethod
           ```.scala
-            Instance(instance name: "inst1", InvokeMethod(method name:"m1", parameters: List(10), ) 
+            Instance(instance_name: "inst1", InvokeMethod(method_name:"m1", parameters: List(10), ) 
             // java counterpart: inst1.m2(10)
           ```
   - ### Class Inheritance
