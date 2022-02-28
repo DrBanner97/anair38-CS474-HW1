@@ -1,4 +1,4 @@
-# CS474 Homework 1 (Aditya Nair - anair38)
+# CS474 Homework  (Aditya Nair - anair38)
 
 Implementation of my Domain Specific Language called myDSL using Scala for writing and evaluation Binary Operations on Set
 
@@ -21,7 +21,7 @@ The project works on **Scala 3.1.0** with [sbt](https://www.scala-sbt.org/) and 
 
 > src/main/scala/myDSL/myDSL.scala
 
-contains all of the code for this project
+contains all code for this project
 
 Navigate to the following path to get to the test file
 
@@ -29,7 +29,7 @@ Navigate to the following path to get to the test file
 
 Press the play button next to **myDSLTest** class to run all the test cases
 
-## Features
+## HW1 Features
 
 - ### Operations on Variables
 
@@ -149,6 +149,120 @@ Press the play button next to **myDSLTest** class to run all the test cases
     //re-assigning variable a from Anonymous Scope
     AnonScope(Assign("a", Value(42))).eval()
   ```
+## HW2 Features
+  - ### Class Definition
+      Assume a simple class in Java
+      ```.java
+     // defining a class in java
+    public class someClassName{
+        private int f = 1;
+        public int x = 4
+    
+        //constructor
+        void someClassName(){
+            f = 2;
+        }
+        private int m1(int z){
+            return z;
+        }
+        public int m2(){
+            retunr 42;
+         } 
+    }  
+    ```
+    the above class definition in myDSL would look like:
+    ```.scala
+ 
+    ClassDef("someClassName", 
+             Field("f", "private",Value(1)),
+             Field("x", "public", Value(4)), 
+             Constructor(Assign("f", Value(2))), 
+             Method("m1", "private",List("z"),Var("z")), 
+             Method("m2", "public", List(), Value(42))
+             ).eval()
+    ```
+    
+    where 
+    - #### Field
+      Field defines instance variables in a class
+      ```.scala
+        Field(name: "f", access modifier: "public"/"private", value: Value(2))
+      ```
+    - #### Constructor
+      Constructor  function for a class and is invoked when instantiated
+      ```.scala
+        Constructor(instructions: Assign("f", Value(2))) //accepts ArraySeq of instructions
+      ```
+    - #### Method
+        Method function for a class   
+      ```.scala
+        Method(methodName: "m1", access modifier: "private", parameterNames: List("z"),instructions: Var("z")),
+      ```  
+  - ### Class Instantiation
+    A simple class instantiation in java
+       ```.java
+     // defining a class in java
+    SomeClassName inst1;
+    inst1 = new SomeClass()
+    ```
+    class instantiation in myDSL
+    ```.scala
+      DeclareInstance(ClassDef("someClassName"),"inst1").eval()
+      AssignInstance(NewObject(ClassDef("someClassName")), "inst1").eval()
+    ```
+    where
+    - #### DeclareInstance
+      declares a variable instance of type a class type
+      ```.scala
+        DeclareInstance(class defintion: ClassDef("someClassName"), instance name: "inst1").eval()
+      ```
+    - #### NewObject
+      instantiates a class definition. invokes constructor
+      ```.scala
+        NewObject(class definition: ClassDef("someClassName"))
+      ```   
+    - #### AssignInstance
+      binds instance name to instance
+      ```.scala
+        AssignInstance(class instance: NewObject(ClassDef("someClassName")), instance name: "inst1").eval()
+      ``` 
+    - #### Class Instance operation
+        - GetField
+          fetching instance variables of an instance
+          ```.scala
+            Instance(instance name: "inst1", GetField(variable name:"x")) 
+            // java counterpart: inst1.x
+          ```
+        - InvokeMethod
+          ```.scala
+            Instance(instance name: "inst1", InvokeMethod(method name:"m1", parameters: List(10), ) 
+            // java counterpart: inst1.m2(10)
+          ```
+  - ### Class Inheritance
+    Inheritance in Java
+    ```.java
+    public class subClass extends someClassName {
+      public int a = 3;
+      void subClass (){
+        a = 4
+      }
+    
+      public int f1(){
+       return a;    
+      }
+    ```
+    class inheritance in myDSL would look like
+    ```.scala
+    ClassDef("subClass", 
+             Field("a", "public",Value(3)),
+             Constructor(Assign("a",Value(4))), 
+             Method("f1", "public",List(),Var("a"))
+            ) Extends ClassDef("someClassName")
+    ```
+  
+    
+
+
 
 ## Limitations
 

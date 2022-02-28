@@ -17,7 +17,7 @@ object myDSL:
   enum Exp:
     case Value(input: BasicType) // to pass in values
     case Var(name: String) // to retrieve variables by name froms scope
-    case DeclareVar(varName: String, value: Exp) // to delcare variables in given scope
+    case DeclareVar(varName: String, value: Exp) // to declare variables in given scope
     case Assign(varName: String, value: Exp)// to assign/re-assign values to an existing variable
     case CreateSet(args: Any*) // to create a set with some values
     case Insert(set: Exp, args: Any*) // to insert into existing set

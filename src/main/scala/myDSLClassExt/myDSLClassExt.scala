@@ -33,6 +33,7 @@ object myDSLClassExt:
   outerScope +=  CLASS_DEFINITION -> scala.collection.mutable.Map[String, String]()
 
 
+  //noinspection ScalaDocUnknownParameter
   enum myDSLClassExt:
     case ClassDef(name: String, args: myDSLClassExt*) //to define and reference class definition
     case Field(varName: String, accessType: String  ,value: BasicType*) //to define Fields within ClassDef
@@ -49,10 +50,7 @@ object myDSLClassExt:
      *  SomeClass s =  new SomeSubClass
      * @param lhsClass: denotes SomeClass
      * @param rhsClass: denotes SomeSubClass
-     * @return: returns a boolean value indicating whether class on rhs can be assigned to rhs based on substitutivity principle
-     *
-     * used to check whether one class can be assigned to another
-     */
+     * */
     def substitution(lhsClass: String, rhsClass: String): Boolean = {
 
       if(lhsClass == rhsClass)
@@ -152,7 +150,7 @@ object myDSLClassExt:
                   else
                     val methodScope: scala.collection.mutable.Map[String, BasicType] = scala.collection.mutable.Map()
                     methodScope += "parent" -> classScope
-                    methodScope += FIELDS -> (scala.collection.mutable.Map[String, String]() ++ parameters.map((param)=> param.asInstanceOf[String] ->0))
+                    methodScope += FIELDS -> (scala.collection.mutable.Map[String, String]() ++ parameters.map(param=> param.asInstanceOf[String] ->0))
                     methodScope(FIELDS).asInstanceOf[scala.collection.mutable.Map[String, BasicType]] += "parent"-> classScope(FIELDS)
                     methodScope += METHOD_INSTRUCTIONS -> params
                     classScope(METHODS).asInstanceOf[scala.collection.mutable.Map[String, Any]] += methodName -> methodScope
@@ -258,7 +256,7 @@ object myDSLClassExt:
               val constructorStatements:ArraySeq[BasicType] =constructor (METHOD_INSTRUCTIONS).asInstanceOf[ArraySeq[BasicType]]
               val constructorScope:scala.collection.mutable.Map[String, BasicType] = constructor(FIELDS).asInstanceOf[scala.collection.mutable.Map[String, BasicType]]
 
-              constructorStatements.foreach((statement)=> statement.asInstanceOf[Exp].eval(constructorScope))
+              constructorStatements.foreach(statement=> statement.asInstanceOf[Exp].eval(constructorScope))
 
               classScope
             case _:Any => throw Exception("invalid class definition")
@@ -291,7 +289,7 @@ object myDSLClassExt:
 
                 val methodInstructions = methodScope(METHOD_INSTRUCTIONS).asInstanceOf[ArraySeq[BasicType]]
 
-                methodInstructions.take(methodInstructions.length - 1).foreach((statement) =>statement.asInstanceOf[Exp].eval(methodScopeFields))
+                methodInstructions.take(methodInstructions.length - 1).foreach(statement =>statement.asInstanceOf[Exp].eval(methodScopeFields))
 
                 methodInstructions.last.asInstanceOf[Exp].eval(methodScopeFields)
                 //                  methodInstructions.foreach(println) //for testing purposes only, uncomment above line when ready
