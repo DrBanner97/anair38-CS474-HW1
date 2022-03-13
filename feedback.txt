@@ -34,5 +34,3 @@ Comments: N/A
 
 Marks for Homework 1: 10%
 
-Comments: 
-Good implementation, easy to understand. Should you think about evaluating Anonymous Scope implementation for the future projects? Is it possible to integrate Anonymous scope in your existing scope implementation?
