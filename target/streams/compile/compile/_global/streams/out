@@ -1,0 +1,140 @@
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- [E029] Pattern Match Exhaustivity Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:43:21 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m43 |[0m            scope.get([31m"parent"[0m) [33mmatch[0m {[0m
+[0m[[0m[33mwarn[0m] [0m[0m   |            [33m^^^^^^^^^^^^^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m   |            [33mmatch[0m may not be exhaustive.[0m
+[0m[[0m[33mwarn[0m] [0m[0m   |[0m
+[0m[[0m[33mwarn[0m] [0m[0m   |            It would fail on pattern case: Some(_)[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- [E029] Pattern Match Exhaustivity Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:138:19 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m138 |[0m          scope.get(scopeName) [33mmatch[0m {[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |          [33m^^^^^^^^^^^^^^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |          [33mmatch[0m may not be exhaustive.[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |          It would fail on pattern case: Some(_)[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- [E029] Pattern Match Exhaustivity Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSLClassExt/myDSLClassExt.scala:253:33 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m253 |[0m                  scopeFields.get(PARENT_INSTANCE) [33mmatch[0m {[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                  [33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                  [33mmatch[0m may not be exhaustive.[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                  It would fail on pattern case: Some(_)[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- [E029] Pattern Match Exhaustivity Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSLClassExt/myDSLClassExt.scala:268:27 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m268 |[0m                  scope.get([31m"parent"[0m) [33mmatch[0m {[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                  [33m^^^^^^^^^^^^^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                  [33mmatch[0m may not be exhaustive.[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                  It would fail on pattern case: Some(_)[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- [E029] Pattern Match Exhaustivity Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSLClassExt/myDSLClassExt.scala:299:69 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m299 |[0m          scope(INTERFACE_DEFINITION).asInstanceOf[[35mmutableMapAny[0m].get(name) [33mmatch[0m{[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |          [33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |          [33mmatch[0m may not be exhaustive.[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |          It would fail on pattern case: Some(_)[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- [E029] Pattern Match Exhaustivity Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSLClassExt/myDSLClassExt.scala:520:32 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m520 |[0m              instanceFields.get(PARENT_INSTANCE) [33mmatch[0m {[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |              [33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |              [33mmatch[0m may not be exhaustive.[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |              It would fail on pattern case: Some(_)[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- [E029] Pattern Match Exhaustivity Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSLClassExt/myDSLClassExt.scala:494:29 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m494 |[0m          instanceMethods.get(methodName) [33mmatch[0m {[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |          [33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |          [33mmatch[0m may not be exhaustive.[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |          It would fail on pattern case: Some(_)[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:44:26 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m44 |[0m                [33mcase[0m Some(parentScope: scala.collection.mutable.Map[String, Any]) => [33mthis[0m.eval(parentScope)[0m
+[0m[[0m[33mwarn[0m] [0m[0m   |                          [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m   |the type test for collection.mutable.Map[String, Any] cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:57:19 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m57 |[0m              [33mcase[0m parentScope: scala.collection.mutable.Map[String, Any] =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m   |                   [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m   |the type test for collection.mutable.Map[String, Any] cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:76:17 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m76 |[0m            [33mcase[0m immutableSet: Set[Any] =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m   |                 [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m   |                 the type test for Set[Any] cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:86:17 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m86 |[0m            [33mcase[0m immutableSet: Set[Any] =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m   |                 [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m   |                 the type test for Set[Any] cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:95:18 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m95 |[0m            [33mcase[0m (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m   |                  [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m   |                 the type test for Set[Any] cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:95:43 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m95 |[0m            [33mcase[0m (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m   |                                           [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m   |                 the type test for Set[Any] cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:104:18 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m104 |[0m            [33mcase[0m (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                  [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |               the type test for Set[Any] cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:104:43 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m104 |[0m            [33mcase[0m (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                                           [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |               the type test for Set[Any] cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:113:18 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m113 |[0m            [33mcase[0m (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                  [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |               the type test for Set[Any] cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:113:43 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m113 |[0m            [33mcase[0m (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                                           [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |               the type test for Set[Any] cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:122:18 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m122 |[0m            [33mcase[0m (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                  [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |               the type test for Set[Any] cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:122:43 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m122 |[0m            [33mcase[0m (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                                           [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |               the type test for Set[Any] cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:131:18 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m131 |[0m            [33mcase[0m (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                  [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |               the type test for Set[Any] cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:131:43 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m131 |[0m            [33mcase[0m (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                                           [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |               the type test for Set[Any] cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:151:22 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m151 |[0m            [33mcase[0m Some(localScope: scala.collection.mutable.Map[String, Any]) =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                      [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |the type test for collection.mutable.Map[String, Any] cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSL/myDSL.scala:177:17 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m177 |[0m            [33mcase[0m scopeMacroMap: scala.collection.mutable.Map[String, Any] =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                 [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |the type test for collection.mutable.Map[String, Any] cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSLClassExt/myDSLClassExt.scala:254:28 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m254 |[0m                  [33mcase[0m Some(parentInstance: mutableMapAny ) =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                            [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |the type test for myDSLClassExt.myDSLClassExt.mutableMapAny cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSLClassExt/myDSLClassExt.scala:269:30 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m269 |[0m                    [33mcase[0m Some(parent: mutableMapAny) =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                              [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |the type test for myDSLClassExt.myDSLClassExt.mutableMapAny cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSLClassExt/myDSLClassExt.scala:301:22 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m301 |[0m            [33mcase[0m Some(interfaceDef: mutableMapAny) =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                      [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |the type test for myDSLClassExt.myDSLClassExt.mutableMapAny cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSLClassExt/myDSLClassExt.scala:412:17 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m412 |[0m            [33mcase[0m classMap: mutableMapAny =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                 [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |the type test for myDSLClassExt.myDSLClassExt.mutableMapAny cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSLClassExt/myDSLClassExt.scala:419:21 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m419 |[0m                [33mcase[0m entityDef: mutableMapAny =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                     [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |the type test for myDSLClassExt.myDSLClassExt.mutableMapAny cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSLClassExt/myDSLClassExt.scala:460:17 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m460 |[0m            [33mcase[0m classScope: mutableMapAny =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                 [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |the type test for myDSLClassExt.myDSLClassExt.mutableMapAny cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSLClassExt/myDSLClassExt.scala:495:22 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m495 |[0m            [33mcase[0m Some(methodScope:  mutableMapAny) =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                      [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |the type test for myDSLClassExt.myDSLClassExt.mutableMapAny cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m-- Unchecked Warning: /Users/aditya/Documents/CS474/anair38-474-hw1/src/main/scala/myDSLClassExt/myDSLClassExt.scala:521:26 [0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m521 |[0m                [33mcase[0m Some(parentInstance: mutableMapAny) =>[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |                          [33m^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m    |the type test for myDSLClassExt.myDSLClassExt.mutableMapAny cannot be checked at runtime[0m
+[0m[[0m[33mwarn[0m] [0m[0m31 warnings found[0m
+[0m[[0m[33mwarn[0m] [0m[0m31 warnings found[0m

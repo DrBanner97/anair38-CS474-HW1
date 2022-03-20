@@ -1,0 +1,28 @@
+package common
+
+object Common:
+  val FIELDS: String = "fields"
+  val FIELD_TYPES: String = "field_types"
+  val FIELD_ACCESS_TYPES: String = "field_access_types"
+//  val ACCESS_TYPE_PUBLIC: String = "public"
+//  val ACCESS_TYPE_PRIVATE: String = "private"
+//  val ACCESS_TYPE_PROTECTED: String = "protected"
+  val METHODS: String = "methods"
+  val METHOD_ACCESS_TYPES : String = "method_access_type"
+  val METHOD_IMPLEMENTATION_TYPES : String = "method_implementation_type"
+  val METHOD_IMPLEMENTATION_CONCRETE : String = "concrete_implementation_type"
+  val METHOD_IMPLEMENTATION_ABSTRACT : String = "abstract_implementation_type"
+  val CLASS_DEFINITION: String = "class_definition"
+  val CLASS_NAME: String = "class_name"
+  val INTERFACE_NAME: String = "interface_name"
+  val METHOD_SCOPE: String = "method_scope"
+  val METHOD_INSTRUCTIONS: String = "method_instructions"
+  val FIELD_TYPE_VARIABLE: String = "variable"
+  val PARENT_INSTANCE: String = "parent_instance"
+  val SCOPE_CALL_TYPE_INNER: String = "inner"
+  val SCOPE_CALL_TYPE_OUTER: String = "outer"
+  val INTERFACE_DEFINITION: String = "interface_definition"
+//  val ABSTRACT_CLASS_DEFINITION: String = "abstract_class_definition"
+  val ENTITY_TYPE: String ="entity_type"
+  val IMPLEMENTED_INTERFACES: String = "implemented_interfaces"
+

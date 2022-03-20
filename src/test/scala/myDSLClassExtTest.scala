@@ -1,6 +1,8 @@
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
-import myDSLClassExt.myDSLClassExt.myDSLClassExt.*
+import  myDSLClassExt.myDSLClassExt.myDSLClassExt.*
+import  myDSLClassExt.myDSLClassExt.AccessType
+import  myDSLClassExt.myDSLClassExt.ImplementationType
 import myDSL.myDSL.Exp.*
 import java.util.NoSuchElementException
 
@@ -11,7 +13,7 @@ class myDSLClassExtTest extends AnyFeatureSpec with GivenWhenThen {
   Feature("Class Creation"){
 
     Scenario("Functioning constructor and fields"){
-      ClassDef("someClassName", Field("f", "private",Value(1)), Field("x", "public", Value(4)), Constructor(Assign("f", Value(2))), Method("m1", "private",List("z"),Var("z")), Method("m2", "public", List(), Value(42))).eval()
+      ClassDef("someClassName", Field("f", AccessType.PRIVATE, Value(1)), Field("x",AccessType.PUBLIC, Value(4)), Constructor(Assign("f", Value(2))), Method("m1", AccessType.PRIVATE,ImplementationType.CONCRETE,List("z"),Var("z")), Method("m2", AccessType.PUBLIC, ImplementationType.CONCRETE,List(), Value(42))).eval()
       DeclareInstance(ClassDef("someClassName"),"inst1").eval()
       AssignInstance(NewObject(ClassDef("someClassName")), "inst1").eval()
 
@@ -22,7 +24,7 @@ class myDSLClassExtTest extends AnyFeatureSpec with GivenWhenThen {
     }
     Scenario("Inheritance"){
 
-      ClassDef("subClass", Field("a", "public",Value(3)), Constructor(Assign("a",Value(4)), Var("f")), Method("f1", "public",List(),Var("a")), ClassDef("someClass3", Constructor(Value(2)))) Extends ClassDef("someClassName")
+      ClassDef("subClass", Field("a", AccessType.PUBLIC,Value(3)), Constructor(Assign("a",Value(4)), Var("f")), Method("f1", AccessType.PUBLIC, ImplementationType.CONCRETE,List(),Var("a")), ClassDef("someClass3", Constructor(Value(2)))) Extends ClassDef("someClassName")
       DeclareInstance(ClassDef("subClass"),"inst2").eval()
       AssignInstance(NewObject(ClassDef("subClass")), "inst2").eval()
       assert(Instance("inst2", GetField("a")).eval() == 4)
@@ -45,7 +47,7 @@ class myDSLClassExtTest extends AnyFeatureSpec with GivenWhenThen {
 
     Scenario("method and variable overriding"){
 
-      ClassDef("subClass2", Field("x", "public",Value(7)), Constructor(), Method("m2", "public",List(),Value(50))) Extends ClassDef("someClassName")
+      ClassDef("subClass2", Field("x", AccessType.PUBLIC,Value(7)), Constructor(), Method("m2", AccessType.PUBLIC, ImplementationType.CONCRETE,List(),Value(50))) Extends ClassDef("someClassName")
       DeclareInstance(ClassDef("subClass2"),"inst3").eval()
       AssignInstance(NewObject(ClassDef("subClass2")), "inst3").eval()
       assert(Instance("inst3", GetField("x")).eval() == 7) //subclass2 instance variable shadows someClassName(parent)'s instance variable x
@@ -55,12 +57,12 @@ class myDSLClassExtTest extends AnyFeatureSpec with GivenWhenThen {
     Scenario("virtual dispatch"){
       DeclareInstance(ClassDef("someClassName"),"inst4").eval()
       AssignInstance(NewObject(ClassDef("subClass2")), "inst4").eval()
-      assert(Instance("inst4", GetField("x")).eval() == 7) //subclass2 instance variable shadows someClassName(parent)'s instance variable x
+      assert(Instance("inst4", GetField("x")).eval() == 4) //subclass2 instance variable shadows someClassName(parent)'s instance variable x
       assert(Instance("inst4", InvokeMethod("m2", List())).eval() == 50) //subclass2 instance variable shadows someClassName(parent)'s instance variable x
     }
 
     Scenario("inner class"){
-      ClassDef("subClass3", Field("r", "public",Value(10)), Constructor(Assign("r",Value(19)), Var("f")), ClassDef("someClass3", Field("s", "public", Value(90)),Constructor(Value(2)))) Extends ClassDef("someClassName")
+      ClassDef("subClass3", Field("r", AccessType.PUBLIC,Value(10)), Constructor(Assign("r",Value(19)), Var("f")), ClassDef("someClass3", Field("s", AccessType.PUBLIC, Value(90)),Constructor(Value(2)))) Extends ClassDef("someClassName")
       DeclareInstance(ClassDef("subClass3"),"inst5").eval()
       AssignInstance(NewObject(ClassDef("subClass3")), "inst5").eval()
 

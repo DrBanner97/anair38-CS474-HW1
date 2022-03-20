@@ -166,7 +166,7 @@ Press the play button next to **myDSLTest** class to run all the test cases
             return z;
         }
         public int m2(){
-            retunr 42;
+            return 42;
          } 
     }  
     ```
@@ -240,7 +240,7 @@ Press the play button next to **myDSLTest** class to run all the test cases
           ```
   - ### Class Inheritance
     Inheritance in Java
-    ```.java
+    ```java
     public class subClass extends someClassName {
       public int a = 3;
       void subClass (){
@@ -252,17 +252,100 @@ Press the play button next to **myDSLTest** class to run all the test cases
       }
     ```
     class inheritance in myDSL would look like
-    ```.scala
+    ```scala
     ClassDef("subClass", 
              Field("a", "public",Value(3)),
              Constructor(Assign("a",Value(4))), 
              Method("f1", "public",List(),Var("a"))
             ) Extends ClassDef("someClassName")
     ```
+
+## HW3 Features
+- ### Interface Definition  
+  Assume a simple interface in Java
+  ```java
+  // defining an interface in java
   
+  interface someInterface {
+    public int a = 10
+    public abstract method1();
+  }
+  
+    ```
+    the above interface definition in myDSL would look like:
+    ```scala
+    InterfaceDef("someInterface",
+      Field("a", AccessType.PUBLIC, Value(10)),
+      Method("method1", AccessType.PUBLIC, ImplementationType.ABSTRACT, List(), Value(1))
+    ).eval()
+    ```
+  
+
+- InterfaceDef only accepts ```abstract``` implementation of methods
+- Does not accept ```private``` fields
+- Returns the definition of interface when no arguments are provided
+
+- ### Interface Implementation
+  assume a class that implements the above created interface
+    ```java
+    public class someClassName implements someInterface{
+        public int x = 47;
     
+        //constructor
+        void someClassName(){
+            x = 2;
+        }
+  
+        @Override
+        public void method1(){
+            int z = 33;
+        }     
+    }  
+    ```
+  in myDSL that would look like
+    ```scala
+    ClassDef("someClassName1",
+        Field("x", AccessType.PUBLIC, Value(47)),
+        Constructor(Assign("x", Value(2))),
+        Method(
+          "method1",
+          AccessType.PUBLIC,
+          ImplementationType.CONCRETE,
+          List(),
+          DeclareVar("z",Value(33))
+        )
+      ).eval()
+  
+    ClassDef("someClassName1") Implements List(InterfaceDef("someInterface"))
 
+    ```
+- where ```Implements``` accepts a ```List``` of ```InterfaceDef```, that a class can implement
 
+  - ###Abstract Class
+      assume an abstract class in java 
+      ```java
+        abstract class AbsClass1{
+          public int y = 10
+          abstract someMethod1();
+        }
+      ```
+    in myDSL would be declared in the following way
+      ```scala
+        AbstractClassDef("AbsClass1",
+          Field("y", AccessType.PUBLIC, Value(10)),
+          Method("someMeth1",
+            AccessType.PUBLIC,
+            ImplementationType.ABSTRACT,
+            List()
+          )
+        ).eval()
+      ```
+      ```AbstractClassDef``` requries atleast one abstract method as an argument and cannot be instantiated
+    
+      Inheritance with abstract class work just like inheritance with classes
+      ```scala
+      ClassDef("someClassName1") Extends AbstractClassDef("AbsClass1")
+    ```
 
 ## Limitations
 
