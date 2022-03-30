@@ -630,7 +630,7 @@ object myDSLClassExt:
           for(interfaceDef <- interfaceDefinitions){
             val superInterface =  interfaceDef.eval().asInstanceOf[mutableMapAny]
             superInterface(FIELDS).asInstanceOf[mutableMapAny].foreach((k,v)=>  concatenatedFields.get(k) match{
-              case Some(m)=> throw Exception("Duplicate field '"+k+"' found in multiple interfaces")
+              case Some(m)=> throw Exception("Duplicate field '"+k+"' found in multiple interfaces")z
               case None =>
                 concatenatedFields+= k->1
                 validInterfacesNames += superInterface(CLASS_NAME).asInstanceOf[String] -> superInterface
