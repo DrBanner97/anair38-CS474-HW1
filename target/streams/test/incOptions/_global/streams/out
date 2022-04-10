@@ -3,9 +3,11 @@
 [0m[[0m[0mdebug[0m] [0m[0mWe backup class files:[0m
 [0m[[0m[0mdebug[0m] [0m[0mRegistering generated classes:[0m
 [0m[[0m[0mdebug[0m] [0m[0m	myDSLClassExtTest.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	myDSLExceptionTest.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	myDSLTest.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	myDSLInterfaceTest.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	myDSLClassExtTest.tasty[0m
+[0m[[0m[0mdebug[0m] [0m[0m	myDSLExceptionTest.tasty[0m
 [0m[[0m[0mdebug[0m] [0m[0m	myDSLTest.tasty[0m
 [0m[[0m[0mdebug[0m] [0m[0m	myDSLInterfaceTest.tasty[0m
 [0m[[0m[0mdebug[0m] [0m[0mRemoving the temporary directory used for backing up class files: /Users/aditya/Documents/CS474/anair38-474-hw1/target/scala-3.1.0/test-classes.bak[0m

@@ -388,9 +388,9 @@ signatures differ only in return types?**
     ```java
   int x = 7;
     if(x == 7)
-        x = 10
+        x = 10;
     else
-        x = 20
+        x = 20;
   ```
   in myDSL that would look like
   ```scala
@@ -411,7 +411,7 @@ signatures differ only in return types?**
         x = 10;
     }
     catch(NumberFormatException e){
-        e.message();
+        e.message;
     }  
    ```
   in myDSL would look like:

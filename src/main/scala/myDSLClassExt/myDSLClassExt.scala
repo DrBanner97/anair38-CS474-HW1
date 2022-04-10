@@ -528,14 +528,11 @@ object myDSLClassExt:
 
                 val methodInstructions = methodScope(METHOD_INSTRUCTIONS).asInstanceOf[ArraySeq[BasicType]]
                 if (methodInstructions.nonEmpty)
-                  methodInstructions.take(methodInstructions.length - 1).foreach(statement =>
-                    statement match {
-                      case statementExp: Exp => statementExp.eval(methodScopeFields)
-                      case statementExpExt: myDSLClassExt => statementExpExt.eval(methodScopeFields)
-                      case _: Any => Exception("Invalid entity in method: " + statement)
-                    }
-                    //                    statement.asInstanceOf[Exp].eval(methodScopeFields)
-                  )
+                  methodInstructions.take(methodInstructions.length - 1).foreach {
+                    case statementExp: Exp => statementExp.eval(methodScopeFields)
+                    case statementExpExt: myDSLClassExt => statementExpExt.eval(methodScopeFields)
+                    case statement@(_: Any) => Exception("Invalid entity in method: " + statement)
+                  }
 
 
                 methodInstructions.last match {

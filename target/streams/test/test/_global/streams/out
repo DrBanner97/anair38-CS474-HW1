@@ -1,6 +1,48 @@
-[0m[[0m[0mdebug[0m] [0m[0mRunning TaskDef(myDSLInterfaceTest, org.scalatest.tools.Framework$$anon$1@39a394c4, false, [SuiteSelector])[0m
-[0m[[0m[0mdebug[0m] [0m[0mRunning TaskDef(myDSLClassExtTest, org.scalatest.tools.Framework$$anon$1@39a394c4, false, [SuiteSelector])[0m
-[0m[[0m[0mdebug[0m] [0m[0mRunning TaskDef(myDSLTest, org.scalatest.tools.Framework$$anon$1@39a394c4, false, [SuiteSelector])[0m
+[0m[[0m[0mdebug[0m] [0m[0mRunning TaskDef(myDSLExceptionTest, org.scalatest.tools.Framework$$anon$1@548de324, false, [SuiteSelector])[0m
+[0m[[0m[0mdebug[0m] [0m[0mRunning TaskDef(myDSLTest, org.scalatest.tools.Framework$$anon$1@548de324, false, [SuiteSelector])[0m
+[0m[[0m[0mdebug[0m] [0m[0mRunning TaskDef(myDSLInterfaceTest, org.scalatest.tools.Framework$$anon$1@548de324, false, [SuiteSelector])[0m
+[0m[[0m[0mdebug[0m] [0m[0mRunning TaskDef(myDSLClassExtTest, org.scalatest.tools.Framework$$anon$1@548de324, false, [SuiteSelector])[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mmyDSLClassExtTest:[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mFeature: Class Creation[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  Scenario: Functioning constructor and fields *** FAILED ***[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  java.lang.Exception: Class someClassName cannot be assigned to subClass1[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExt.myDSLClassExt$myDSLClassExt.eval(myDSLClassExt.scala:451)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExtTest.testFun$proxy1$1(myDSLClassExtTest.scala:18)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExtTest.fun$proxy1$1$$anonfun$1(myDSLClassExtTest.scala:15)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at org.scalatest.featurespec.AnyFeatureSpecLike.ScenarioImpl$$anonfun$1(AnyFeatureSpecLike.scala:138)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at org.scalatest.Transformer.apply$$anonfun$1(Transformer.scala:22)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at org.scalatest.OutcomeOf.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at org.scalatest.OutcomeOf.outcomeOf$(OutcomeOf.scala:31)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:21)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  ...[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  Scenario: Functioning parameterized method *** FAILED ***[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  java.lang.Exception: m1 not found[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExt.myDSLClassExt$myDSLClassExt.eval(myDSLClassExt.scala:557)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExt.myDSLClassExt$myDSLClassExt.eval(myDSLClassExt.scala:295)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExtTest.testFun$proxy2$1(myDSLClassExtTest.scala:23)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExtTest.fun$proxy1$2$$anonfun$2(myDSLClassExtTest.scala:22)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at org.scalatest.featurespec.AnyFeatureSpecLike.ScenarioImpl$$anonfun$1(AnyFeatureSpecLike.scala:138)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at org.scalatest.Transformer.apply$$anonfun$1(Transformer.scala:22)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at org.scalatest.OutcomeOf.outcomeOf(OutcomeOf.scala:85)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at org.scalatest.OutcomeOf.outcomeOf$(OutcomeOf.scala:31)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at org.scalatest.Transformer.apply(Transformer.scala:22)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  ...[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: Inheritance[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: Access modifiers[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: method and variable overriding[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: virtual dispatch[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: inner class[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mmyDSLExceptionTest:[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mFeature: If structure[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: scoping in If condition[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: If branching construct[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mFeature: Exception handling[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: scoping in Exception handling[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: Error message catching[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: Inability to catch unhandled exception[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32mmyDSLInterfaceTest:[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32mFeature: Interface creation[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: no private/protected fields in Interface[0m[0m
@@ -21,63 +63,6 @@
 [0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: classes must implement all abstract methods in inherited abstract class[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: class inheriting abstract class[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: abstract class upcasting[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[32mmyDSLClassExtTest:[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[32mFeature: Class Creation[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: Functioning constructor and fields[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: Functioning parameterized method[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  Scenario: Inheritance *** FAILED ***[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  java.util.NoSuchElementException: key not found: someClassName[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at scala.collection.MapOps.default(Map.scala:274)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at scala.collection.MapOps.default$(Map.scala:273)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at scala.collection.AbstractMap.default(Map.scala:405)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at scala.collection.mutable.HashMap.apply(HashMap.scala:425)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExt.myDSLClassExt$myDSLClassExt.eval(myDSLClassExt.scala:473)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExt.myDSLClassExt$myDSLClassExt.eval(myDSLClassExt.scala:465)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExt.myDSLClassExt$myDSLClassExt.eval(myDSLClassExt.scala:411)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExtTest.testFun$proxy3$1(myDSLClassExtTest.scala:29)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExtTest.fun$proxy1$3$$anonfun$3(myDSLClassExtTest.scala:25)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at org.scalatest.featurespec.AnyFeatureSpecLike.ScenarioImpl$$anonfun$1(AnyFeatureSpecLike.scala:138)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  ...[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: Access modifiers[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  Scenario: method and variable overriding *** FAILED ***[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  java.util.NoSuchElementException: key not found: someClassName[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at scala.collection.MapOps.default(Map.scala:274)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at scala.collection.MapOps.default$(Map.scala:273)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at scala.collection.AbstractMap.default(Map.scala:405)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at scala.collection.mutable.HashMap.apply(HashMap.scala:425)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExt.myDSLClassExt$myDSLClassExt.eval(myDSLClassExt.scala:473)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExt.myDSLClassExt$myDSLClassExt.eval(myDSLClassExt.scala:465)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExt.myDSLClassExt$myDSLClassExt.eval(myDSLClassExt.scala:411)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExtTest.testFun$proxy5$1(myDSLClassExtTest.scala:52)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExtTest.fun$proxy1$5$$anonfun$5(myDSLClassExtTest.scala:48)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at org.scalatest.featurespec.AnyFeatureSpecLike.ScenarioImpl$$anonfun$1(AnyFeatureSpecLike.scala:138)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  ...[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  Scenario: virtual dispatch *** FAILED ***[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  java.util.NoSuchElementException: key not found: someClassName[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at scala.collection.MapOps.default(Map.scala:274)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at scala.collection.MapOps.default$(Map.scala:273)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at scala.collection.AbstractMap.default(Map.scala:405)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at scala.collection.mutable.HashMap.apply(HashMap.scala:425)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExt.myDSLClassExt$myDSLClassExt.eval(myDSLClassExt.scala:473)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExt.myDSLClassExt$myDSLClassExt.eval(myDSLClassExt.scala:465)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExt.myDSLClassExt$myDSLClassExt.eval(myDSLClassExt.scala:411)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExtTest.testFun$proxy6$1(myDSLClassExtTest.scala:59)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExtTest.fun$proxy1$6$$anonfun$6(myDSLClassExtTest.scala:57)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at org.scalatest.featurespec.AnyFeatureSpecLike.ScenarioImpl$$anonfun$1(AnyFeatureSpecLike.scala:138)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  ...[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  Scenario: inner class *** FAILED ***[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  java.util.NoSuchElementException: key not found: someClassName[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at scala.collection.MapOps.default(Map.scala:274)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at scala.collection.MapOps.default$(Map.scala:273)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at scala.collection.AbstractMap.default(Map.scala:405)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at scala.collection.mutable.HashMap.apply(HashMap.scala:425)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExt.myDSLClassExt$myDSLClassExt.eval(myDSLClassExt.scala:473)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExt.myDSLClassExt$myDSLClassExt.eval(myDSLClassExt.scala:465)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExt.myDSLClassExt$myDSLClassExt.eval(myDSLClassExt.scala:411)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExtTest.testFun$proxy7$1(myDSLClassExtTest.scala:67)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at myDSLClassExtTest.fun$proxy1$7$$anonfun$7(myDSLClassExtTest.scala:64)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at org.scalatest.featurespec.AnyFeatureSpecLike.ScenarioImpl$$anonfun$1(AnyFeatureSpecLike.scala:138)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  ...[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32mmyDSLTest:[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32mFeature: Set Creation and modification[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: Creating and Assigning a set[0m[0m
@@ -97,12 +82,13 @@
 [0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: Anonymous Scope[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32mFeature: Macros[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32m  Scenario: Creating and Evaluating Macro[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[36mRun completed in 447 milliseconds.[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[36mTotal number of tests run: 36[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[36mSuites: completed 3, aborted 0[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[36mTests: succeeded 32, failed 4, canceled 0, ignored 0, pending 0[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m*** 4 TESTS FAILED ***[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mRun completed in 443 milliseconds.[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mTotal number of tests run: 41[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mSuites: completed 4, aborted 0[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mTests: succeeded 39, failed 2, canceled 0, ignored 0, pending 0[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m*** 2 TESTS FAILED ***[0m[0m
 [0m[[0m[0mdebug[0m] [0m[0mPassed tests:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	myDSLExceptionTest[0m
 [0m[[0m[0mdebug[0m] [0m[0m	myDSLTest[0m
 [0m[[0m[0mdebug[0m] [0m[0m	myDSLInterfaceTest[0m
 [0m[[0m[31merror[0m] [0m[0mFailed tests:[0m
