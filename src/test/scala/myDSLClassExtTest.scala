@@ -32,7 +32,7 @@ class myDSLClassExtTest extends AnyFeatureSpec with GivenWhenThen {
       assert(Instance("inst2", InvokeMethod("m2", List())).eval() == 42)
       // accessing parent class's instance variable x
       assert(Instance("inst2", GetField("x")).eval() == 4)
-    }
+      }
 
     Scenario("Access modifiers"){
       // accessing parent class's method m2

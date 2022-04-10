@@ -8,15 +8,17 @@ import scala.util.Random
 object myDSL:
 
   private val MACRO_KEY: String = "macro"
-
+  private val exceptionClasses: mutableMap =  scala.collection.mutable.Map()
   private val bindingScope: scala.collection.mutable.Map[String, Any] = scala.collection.mutable.Map()
   bindingScope += MACRO_KEY -> scala.collection.mutable.Map[String, Any]()
 
   type BasicType = Any
+  type mutableMap = scala.collection.mutable.Map[String, Any]
 
   enum Exp:
     case Value(input: BasicType) // to pass in values
     case Var(name: String) // to retrieve variables by name froms scope
+    case Check(exp1: Exp, exp2: Exp)
     case DeclareVar(varName: String, value: Exp) // to declare variables in given scope
     case Assign(varName: String, value: Exp)// to assign/re-assign values to an existing variable
     case CreateSet(args: Any*) // to create a set with some values
@@ -28,9 +30,10 @@ object myDSL:
     case SymmetricDiff(set1: Exp, set2: Exp) //to perform Symmetric Difference operation on two sets
     case Product(set1: Exp, set2: Exp) //to perform Cartesian Product on two sets
     case Scope(scopeName: String, exp: Exp) //to define/evaluate expressions in a user-defined named scope
-    case AnonScope(exp: Exp) //to define expressions in a user-defined  un-named scope
+    case AnonScope(exp: Exp*) //to define expressions in a user-defined  un-named scope
     case SetMacro(macroName: String, exp: Exp) //to define macros
     case GetMacro(macroName: String) // to fetch/evaluate macro expressions
+    case If(condition: Exp, thenClause: AnonScope, elseClause: AnonScope)
 
     //attribute scope allows switching to different scopes
     def eval(scope: scala.collection.mutable.Map[String, Any] = bindingScope): BasicType =
@@ -47,6 +50,13 @@ object myDSL:
 
             case Some(value) => value
           }
+
+        case Check(exp1: Exp, exp2: Exp) =>
+          val exp1Eval = exp1.eval(scope)
+          val exp2Eval = exp2.eval(scope)
+
+          exp1Eval == exp2Eval
+
 
         case Assign(varName: String, value: Exp) =>
 
@@ -153,13 +163,16 @@ object myDSL:
 
           }
 
-        case AnonScope(exp) =>
+        case AnonScope(exp*) =>
           val newAnonScope: scala.collection.mutable.Map[String, Any] = scala.collection.mutable.Map()
           newAnonScope += MACRO_KEY -> scala.collection.mutable.Map[String, Any]()
           newAnonScope += "parent" -> scope
           //pairing anonymous scope with random key
           scope += (Random.alphanumeric take 10).mkString -> newAnonScope
-          exp.eval(newAnonScope)
+
+          exp.foreach(e => e.eval(newAnonScope))
+
+//          exp.eval(newAnonScope)
 
 
         case SetMacro(macroName, exp: Exp) =>
@@ -182,16 +195,42 @@ object myDSL:
               }
             case None => throw Error("Could not find specified macro")
           }
-
-
+        case If(condition: Exp, thenClause, elseClause) =>
+          val conditionEval = condition.eval(scope)
+          conditionEval match{
+            case conditionBool: Boolean =>
+              if(conditionBool)
+                AnonScope(thenClause).eval(scope)
+              else
+                AnonScope(elseClause).eval(scope)
+            case _:Any =>
+              throw Exception("condition in If should evaluate to Boolean")
+          }
       }
 
   @main def runExp(): Unit =
     import Exp.*
-    DeclareVar("a", CreateSet(Value(1), Value(2), Value(3))).eval()
-    DeclareVar("b", CreateSet(Value(3), Value(4), Value(5))).eval()
-    Assign("a",Insert(Var("a"), Value(4))).eval()
-    println(Var("a").eval())
+//    DeclareVar("a", CreateSet(Value(1), Value(2), Value(3))).eval()
+//    DeclareVar("b", CreateSet(Value(3), Value(4), Value(5))).eval()
+//    Assign("a",Insert(Var("a"), Value(4))).eval()
+//    println(Var("a").eval())
+//    DeclareVar("a", Value(5)).eval()
+//    DeclareVar("b", Value(1)).eval()
+//    If(Var("a").eval() == 2,Assign("b", CreateSet(Value(1), Value(2), Value(3))), Assign("b", CreateSet(Value(2), Value(3), Value(4))) ).eval()
+//    println(Var("b").eval())
+
+//    DeclareVar("x", Value(3)).eval()
+//    println(Check(Var("a"), Value(3)).eval())
+
+//      AnonScope(DeclareVar("x", CreateSet(Value(1),Value(2),Value(3))), DeclareVar("y", CreateSet(Value(3),Value(4),Value(5))), Union(Var("x"), Var("y"))).eval()
+      DeclareVar("x", Value(2)).eval()
+
+      If(Check(Var("x"), Value(1)),
+        AnonScope(DeclareVar("y", CreateSet(Value(1),Value(2),Value(3))), Assign("x", CreateSet(Value(3),Value(4),Value(5)))),
+        AnonScope(Assign("x", Value(10))),
+      ).eval()
+
+      println(Var("x").eval())
 
 
 

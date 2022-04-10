@@ -8,6 +8,7 @@ import jdk.jshell.spi.ExecutionControl.NotImplementedException
 import java.util.NoSuchElementException
 import scala.collection.immutable.ArraySeq
 import scala.collection.mutable
+import util.control.Breaks._
 
 object myDSLClassExt:
 
@@ -42,6 +43,7 @@ object myDSLClassExt:
     case CLASS
     case INTERFACE
     case ABSTRACT_CLASS
+    case EXCEPTION_CLASS
 
 
   //noinspection ScalaDocUnknownParameter
@@ -64,6 +66,12 @@ object myDSLClassExt:
     case InterfaceDef(name: String, args: myDSLClassExt* )
     case Interface(name: String, operation: myDSLClassExt)
     case AbstractClassDef(name: String, args: myDSLClassExt*)
+    case UnInstantiableClass(classDef: ClassDef, args: myDSLClassExt*) // to access fields and methods of abstract and exception classes
+    case CatchException(exceptionClassName: String,catchClause: Catch,instructions: BasicType*)
+    case Catch(varName: String, instructions: BasicType*)
+    case ExceptionClassDef(className: String, args: myDSLClassExt)
+    case ThrowException(exceptionClassDef: myDSLClassExt, operation: AssignField)
+    case AssignField(fieldName: String, value: BasicType)
 
     /**
      *  SomeClass s =  new SomeSubClass
@@ -92,11 +100,7 @@ object myDSLClassExt:
 
     }
 
-
-
-
-
-    def defineEntity (input: myDSLClassExt, name: String, args: Seq[myDSLClassExt]): mutableMapAny =
+    def defineEntity (name: String, args: Seq[myDSLClassExt]): mutableMapAny =
 
       val currentScope: mutableMapAny= scala.collection.mutable.Map()
       currentScope +=  FIELDS -> mutable.Map[String, BasicType]()
@@ -235,68 +239,86 @@ object myDSLClassExt:
 
       this match {
         /**
-         * @param name: variable name of the field
-         * fetches field from given scope. with inherited classes GetField looks for field in parent class if not present
+         * @param name  : variable name of the field
+         *             fetches field from given scope. with inherited classes GetField looks for field in parent class if not present
          */
         case GetField(name: String) =>
 
           val scopeFields = scope(FIELDS).asInstanceOf[mutableMapAny]
           scopeFields.get(name) match {
             case Some(value: BasicType) =>
-              if(scopeCall == SCOPE_CALL_TYPE_OUTER && scope(FIELD_ACCESS_TYPES).asInstanceOf[ mutable.Map[String, AccessType]](name) == AccessType.PRIVATE)
-                throw Exception("variable "+ name+" is private")
+              if (scopeCall == SCOPE_CALL_TYPE_OUTER && scope(FIELD_ACCESS_TYPES).asInstanceOf[mutable.Map[String, AccessType]](name) == AccessType.PRIVATE)
+                throw Exception("variable " + name + " is private")
               else
                 value
             case None =>
-            scope(ENTITY_TYPE).asInstanceOf[EntityType] match{
+              scope(ENTITY_TYPE).asInstanceOf[EntityType] match {
                 case EntityType.CLASS =>
                   scopeFields.get(PARENT_INSTANCE) match {
-                  case Some(parentInstance: mutableMapAny ) =>
-                    val valueToReturn = GetField(name).eval(parentInstance, SCOPE_CALL_TYPE_OUTER)
+                    case Some(parentInstance: mutableMapAny) =>
+                      val valueToReturn = GetField(name).eval(parentInstance, SCOPE_CALL_TYPE_OUTER)
 
-                    /**
-                     * checking for fields in interfaces current class may have implemented
-                     */
-                    if(valueToReturn.isInstanceOf[Exception])
-                      checkInterfaceForField(scope, valueToReturn.asInstanceOf[Exception], name)
-                    else
-                      valueToReturn
-                  case None =>
-                    checkInterfaceForField(scope, Exception("Field "+name+" not found"), name)
-                }
+                      /**
+                       * checking for fields in interfaces current class may have implemented
+                       */
+                      if (valueToReturn.isInstanceOf[Exception])
+                        checkInterfaceForField(scope, valueToReturn.asInstanceOf[Exception], name)
+                      else
+                        valueToReturn
+                    case None =>
+                      checkInterfaceForField(scope, Exception("Field " + name + " not found"), name)
+                  }
                 case EntityType.INTERFACE | EntityType.ABSTRACT_CLASS =>
                   scope.get("parent") match {
                     case Some(parent: mutableMapAny) =>
                       val valueToReturn = GetField(name).eval(parent, SCOPE_CALL_TYPE_OUTER)
-                      if(valueToReturn.isInstanceOf[Exception])
+                      if (valueToReturn.isInstanceOf[Exception])
                         throw valueToReturn.asInstanceOf[Exception]
                       else
                         valueToReturn
-                    case None => Exception("Field "+name+" not found")
+                    case None => Exception("Field " + name + " not found")
                   }
               }
-
 
 
           }
 
         /**
-         * @param instanceName: variable name of the instance
-         * evaluates operation in the scope of instance
+         * @param instanceName  : variable name of the instance
+         *                     evaluates operation in the scope of instance
          */
-        case Instance(instanceName, operation)=>
+        case Instance(instanceName, operation) =>
 
-          val instance=GetField(instanceName).eval(scope).asInstanceOf[mutableMapAny]
+          val instance = GetField(instanceName).eval(scope).asInstanceOf[mutableMapAny]
 
           //          val instance = scope(FIELDS).asInstanceOf[scala.collection.mutable.Map[String, String]](instanceName)
           operation.eval(instance)
 
+
+        case UnInstantiableClass(classDef, operations*) =>
+          require( operations.length>0)
+          classDef.eval() match {
+
+            case classDefMap: mutableMapAny =>
+//              if(operations.nonEmpty)
+              operations.take(operations.length - 1).foreach {
+                case statementExp: myDSLClassExt => statementExp.eval(classDefMap)
+                case _: Any => Exception("Invalid statement")
+              }
+
+              return operations.last.asInstanceOf[myDSLClassExt].eval(classDefMap)
+            case _: Any => throw NoSuchElementException()
+
+          }
+
+          //          val instance = scope(FIELDS).asInstanceOf[scala.collection.mutable.Map[String, String]](instanceName)
+
         /**
          * for evaluating operations specific to the scope of an interface
-          */
+         */
         case Interface(name: String, operation) =>
 
-          scope(INTERFACE_DEFINITION).asInstanceOf[mutableMapAny].get(name) match{
+          scope(INTERFACE_DEFINITION).asInstanceOf[mutableMapAny].get(name) match {
 
             case Some(interfaceDef: mutableMapAny) =>
               operation.eval(interfaceDef)
@@ -306,25 +328,25 @@ object myDSLClassExt:
 
 
         /**
-         *  @param name: name of class
-         *  @param args: class definitions like Constructor, Methods, Field, ClassDef(inner classes) go here
-         *  used for class definition or fetching class definition (when args is not provided)
+         * @param name  : name of class
+         * @param args  : class definitions like Constructor, Methods, Field, ClassDef(inner classes) go here
+         *             used for class definition or fetching class definition (when args is not provided)
          */
-        case ClassDef(name: String, args* )=>
+        case ClassDef(name: String, args*) =>
 
-          if(name == FIELD_TYPE_VARIABLE)
-            throw Exception("class name cannot be "+FIELD_TYPE_VARIABLE)
+          if (name == FIELD_TYPE_VARIABLE)
+            throw Exception("class name cannot be " + FIELD_TYPE_VARIABLE)
 
-          if(args.length >0) {
-            val currentScope: mutableMapAny = defineEntity(this, name, args)
+          if (args.length > 0) {
+            val currentScope: mutableMapAny = defineEntity(name, args)
 
-            currentScope += ENTITY_TYPE  -> EntityType.CLASS
-            currentScope += IMPLEMENTED_INTERFACES  -> List[BasicType]()
-            currentScope(METHODS).asInstanceOf[mutableMapAny].foreach((methodName, method)=>
+            currentScope += ENTITY_TYPE -> EntityType.CLASS
+            currentScope += IMPLEMENTED_INTERFACES -> List[BasicType]()
+            currentScope(METHODS).asInstanceOf[mutableMapAny].foreach((methodName, method) =>
 
 
-            currentScope(METHOD_IMPLEMENTATION_TYPES).asInstanceOf[scala.collection.mutable.Map[String, ImplementationType]].
-              foreach((k,v) => if(v == ImplementationType.ABSTRACT) throw Exception("Method "+ k+" in class " + name+" cannot be abstract" ))
+              currentScope(METHOD_IMPLEMENTATION_TYPES).asInstanceOf[scala.collection.mutable.Map[String, ImplementationType]].
+                foreach((k, v) => if (v == ImplementationType.ABSTRACT) throw Exception("Method " + k + " in class " + name + " cannot be abstract"))
             )
 
             scope(CLASS_DEFINITION).asInstanceOf[mutableMapAny] += name -> currentScope
@@ -337,26 +359,26 @@ object myDSLClassExt:
 
 
         /**
-         *  @param name: name of interface
-         *  @param args: interface definitions like Methods, Field, ClassDef(inner classes) go here
-         *  used for interface definition or fetching interface definition (when args is not provided)
+         * @param name  : name of interface
+         * @param args  : interface definitions like Methods, Field, ClassDef(inner classes) go here
+         *             used for interface definition or fetching interface definition (when args is not provided)
          */
-        case InterfaceDef(name: String, args* )=>
+        case InterfaceDef(name: String, args*) =>
 
-          if(name == FIELD_TYPE_VARIABLE)
-            throw Exception("interface name cannot be "+FIELD_TYPE_VARIABLE)
+          if (name == FIELD_TYPE_VARIABLE)
+            throw Exception("interface name cannot be " + FIELD_TYPE_VARIABLE)
 
-          if(args.length >0) {
-            val currentScope: mutableMapAny = defineEntity(this, name, args)
-            currentScope += ENTITY_TYPE  -> EntityType.INTERFACE
+          if (args.length > 0) {
+            val currentScope: mutableMapAny = defineEntity(name, args)
+            currentScope += ENTITY_TYPE -> EntityType.INTERFACE
 
             currentScope(METHOD_IMPLEMENTATION_TYPES).asInstanceOf[mutable.Map[String, ImplementationType]].
-              foreach((k,v) => if(v == ImplementationType.CONCRETE) throw Exception("Method "+ k+" in interface " + name+" cannot have a body" ))
+              foreach((k, v) => if (v == ImplementationType.CONCRETE) throw Exception("Method " + k + " in interface " + name + " cannot have a body"))
 
-            currentScope(FIELDS).asInstanceOf[mutableMapAny].foreach((varName,value)=> if(value == null) throw Exception("value expected for variable "+varName+" in interface "+name))
+            currentScope(FIELDS).asInstanceOf[mutableMapAny].foreach((varName, value) => if (value == null) throw Exception("value expected for variable " + varName + " in interface " + name))
 
 
-            currentScope(FIELD_ACCESS_TYPES).asInstanceOf[scala.collection.mutable.Map[String, AccessType]].foreach((k,v)=> if(v != AccessType.PUBLIC) throw Exception("modifier "+v+" not allowed for Interface"))
+            currentScope(FIELD_ACCESS_TYPES).asInstanceOf[scala.collection.mutable.Map[String, AccessType]].foreach((k, v) => if (v != AccessType.PUBLIC) throw Exception("modifier " + v + " not allowed for Interface"))
 
 
             scope(INTERFACE_DEFINITION).asInstanceOf[mutableMapAny] += name -> currentScope
@@ -368,22 +390,22 @@ object myDSLClassExt:
 
 
         /**
-         *  @param name: name of abstract class
-         *  @param args: abstract class definitions like Methods, Field, ClassDef(inner classes) go here
-         *  used for abstract definition or fetching abstract class definition (when args is not provided)
+         * @param name  : name of abstract class
+         * @param args  : abstract class definitions like Methods, Field, ClassDef(inner classes) go here
+         *             used for abstract definition or fetching abstract class definition (when args is not provided)
          */
-        case AbstractClassDef(name: String, args* )=>
+        case AbstractClassDef(name: String, args*) =>
 
-          if(name == FIELD_TYPE_VARIABLE)
-            throw Exception("abstract class name cannot be "+FIELD_TYPE_VARIABLE)
+          if (name == FIELD_TYPE_VARIABLE)
+            throw Exception("abstract class name cannot be " + FIELD_TYPE_VARIABLE)
 
-          if(args.length >0) {
-            val currentScope: mutableMapAny = defineEntity(this, name, args)
-            currentScope += ENTITY_TYPE  -> EntityType.ABSTRACT_CLASS
+          if (args.length > 0) {
+            val currentScope: mutableMapAny = defineEntity(name, args)
+            currentScope += ENTITY_TYPE -> EntityType.ABSTRACT_CLASS
 
 
-            if(!currentScope(METHOD_IMPLEMENTATION_TYPES).asInstanceOf[mutable.Map[String, ImplementationType]].exists(_._2 == ImplementationType.ABSTRACT))
-              throw Exception("Abstract class "+name+" must have atleast one abstract method")
+            if (!currentScope(METHOD_IMPLEMENTATION_TYPES).asInstanceOf[mutable.Map[String, ImplementationType]].exists(_._2 == ImplementationType.ABSTRACT))
+              throw Exception("Abstract class " + name + " must have atleast one abstract method")
 
             scope(CLASS_DEFINITION).asInstanceOf[mutableMapAny] += name -> currentScope
             classInheritance += name -> null
@@ -393,7 +415,7 @@ object myDSLClassExt:
           scope(CLASS_DEFINITION).asInstanceOf[mutableMapAny](name)
         case DeclareInstance(classDef, varName) =>
 
-//          val classDefs = scope(CLASS_DEFINITION).asInstanceOf[scala.collection.mutable.Map[String, String]]
+          //          val classDefs = scope(CLASS_DEFINITION).asInstanceOf[scala.collection.mutable.Map[String, String]]
 
           val classScope = classDef.eval(scope).asInstanceOf[mutableMapAny]
           scope(FIELD_TYPES).asInstanceOf[mutableMapAny] += varName -> classScope
@@ -401,114 +423,129 @@ object myDSLClassExt:
           classScope
 
         /**
-         * @param classDef: ClassDef type of the instance
-         * @param varName: name of existing instance variable
-         * binds instance of ClassDef to varName
+         * @param classDef  : ClassDef type of the instance
+         * @param varName    : name of existing instance variable
+         *                 binds instance of ClassDef to varName
          */
         case AssignInstance(classDef, varName) =>
 
 
-          classDef.eval(scope) match{
+          classDef.eval(scope) match {
             case classMap: mutableMapAny =>
-              val instanceType  = scope(FIELD_TYPES).asInstanceOf[mutableMapAny]
-              val currentScopeFields =scope(FIELDS).asInstanceOf[mutableMapAny]
+              val instanceType = scope(FIELD_TYPES).asInstanceOf[mutableMapAny]
+              val currentScopeFields = scope(FIELDS).asInstanceOf[mutableMapAny]
 
 
               instanceType(varName) match {
 
                 case entityDef: mutableMapAny =>
 
-                  entityDef(ENTITY_TYPE).asInstanceOf[EntityType] match{
+                  entityDef(ENTITY_TYPE).asInstanceOf[EntityType] match {
 
-                    case EntityType.CLASS | EntityType.ABSTRACT_CLASS  =>
+                    case EntityType.CLASS | EntityType.ABSTRACT_CLASS =>
                       if (substitution(entityDef(CLASS_NAME).asInstanceOf[String], classMap(CLASS_NAME).asInstanceOf[String]))
                         classMap(FIELDS).asInstanceOf[mutableMapAny] ++= entityDef(FIELDS).asInstanceOf[mutableMapAny]
                         currentScopeFields += varName -> classMap
                         currentScopeFields(varName)
                       else
-                        throw Exception("Class "+classMap(CLASS_NAME)+" cannot be assigned to "+ entityDef(CLASS_NAME))
+                        throw Exception("Class " + classMap(CLASS_NAME) + " cannot be assigned to " + entityDef(CLASS_NAME))
                     case EntityType.INTERFACE =>
                       val interfaceName = entityDef(CLASS_NAME).asInstanceOf[String]
-                      if(interfaceSubstitution(interfaceName, classMap(CLASS_NAME).asInstanceOf[String]))
+                      if (interfaceSubstitution(interfaceName, classMap(CLASS_NAME).asInstanceOf[String]))
                         classMap(FIELDS).asInstanceOf[mutableMapAny] ++= entityDef(FIELDS).asInstanceOf[mutableMapAny]
                         currentScopeFields += varName -> classMap
                         currentScopeFields(varName)
                       else
-                        throw Exception("Class "+classMap(CLASS_NAME)+" cannot be assigned to interface:"+ interfaceName)
+                        throw Exception("Class " + classMap(CLASS_NAME) + " cannot be assigned to interface:" + interfaceName)
 
                   }
 
-                case _:Any => throw Exception("Cannot declare instance of type variable")
+                case _: Any => throw Exception("Cannot declare instance of type variable")
 
               }
 
 
-
-            case _:Any =>
+            case _: Any =>
 
               throw Exception("No Such class found")
 
           }
 
         /**
-         * @param classDef: ClassDef that needs to be instantiated
-         * instantiation of a class definition happens here
-         * constructor invocation of current class and parent class occurs recursively
+         * @param classDef  : ClassDef that needs to be instantiated
+         *                 instantiation of a class definition happens here
+         *                 constructor invocation of current class and parent class occurs recursively
          */
         case NewObject(classDef: ClassDef) =>
           classDef.eval(scope) match {
             case classScope: mutableMapAny =>
 
               val className = classScope(CLASS_NAME).asInstanceOf[String]
-              if(classInheritance(className)!=null) //checking for inheritance
-                val classFields  = classScope(FIELDS).asInstanceOf[mutableMapAny]
+              if (classInheritance(className) != null) //checking for inheritance
+                val classFields = classScope(FIELDS).asInstanceOf[mutableMapAny]
                 classFields += PARENT_INSTANCE -> NewObject(ClassDef(classInheritance(className))).eval(scope)
                 //                currentScope(PARENT_INSTANCE) = NewObject(ClassDef(classInheritance(className))).eval()
-                classFields += "parent"-> classFields(PARENT_INSTANCE).asInstanceOf[mutableMapAny](FIELDS)
+                classFields += "parent" -> classFields(PARENT_INSTANCE).asInstanceOf[mutableMapAny](FIELDS)
 
 
-              if(classScope(ENTITY_TYPE).asInstanceOf[EntityType] != EntityType.ABSTRACT_CLASS)
+              if (classScope(ENTITY_TYPE).asInstanceOf[EntityType] != EntityType.ABSTRACT_CLASS)
                 //Invoking constructor
                 val methods = classScope(METHODS).asInstanceOf[mutableMapAny]
                 val constructor = methods(className).asInstanceOf[mutableMapAny]
-                val constructorStatements:ArraySeq[BasicType] =constructor (METHOD_INSTRUCTIONS).asInstanceOf[ArraySeq[BasicType]]
-                val constructorScope:mutableMapAny = constructor(FIELDS).asInstanceOf[mutableMapAny]
+                val constructorStatements: ArraySeq[BasicType] = constructor(METHOD_INSTRUCTIONS).asInstanceOf[ArraySeq[BasicType]]
+                val constructorScope: mutableMapAny = constructor(FIELDS).asInstanceOf[mutableMapAny]
 
-                constructorStatements.foreach(statement=> statement.asInstanceOf[Exp].eval(constructorScope))
+                constructorStatements.foreach(statement => statement.asInstanceOf[Exp].eval(constructorScope))
 
               classScope
-            case _:Any => throw Exception("invalid class definition")
+            case _: Any => throw Exception("invalid class definition")
 
           }
 
         /**
-         * @param methodName: name of the method that needs invocation
-         * @param parameters: method parameters if any
-         * used to invoke methods in a given scope
-         * also recursively checks for methods in parent class scopes if it does not exist in current scope
-         * checks for access_type of method before returning (private, public)
+         * @param methodName  : name of the method that needs invocation
+         * @param parameters  : method parameters if any
+         *                   used to invoke methods in a given scope
+         *                   also recursively checks for methods in parent class scopes if it does not exist in current scope
+         *                   checks for access_type of method before returning (private, public)
          */
         case InvokeMethod(methodName, parameters) =>
           val instanceMethods = scope(METHODS).asInstanceOf[mutableMapAny]
 
           instanceMethods.get(methodName) match {
-            case Some(methodScope:  mutableMapAny) =>
+            case Some(methodScope: mutableMapAny) =>
 
-              if(scopeCall == SCOPE_CALL_TYPE_OUTER && scope(METHOD_ACCESS_TYPES).asInstanceOf[scala.collection.mutable.Map[String, AccessType]](methodName) == AccessType.PRIVATE)
-                throw Exception("method "+methodName+" is private")
+              if (scopeCall == SCOPE_CALL_TYPE_OUTER && scope(METHOD_ACCESS_TYPES).asInstanceOf[scala.collection.mutable.Map[String, AccessType]](methodName) == AccessType.PRIVATE)
+                throw Exception("method " + methodName + " is private")
 
               val methodScopeFields = methodScope(FIELDS).asInstanceOf[mutableMapAny]
 
-              if(parameters.length == methodScopeFields.size -1 ){
+              if (parameters.length == methodScopeFields.size - 1) {
 
-                val parentExcludedScope = methodScopeFields.filter((k,v)=> k!="parent")
+                val parentExcludedScope = methodScopeFields.filter((k, v) => k != "parent")
                 //                                        val zippedParams:scala.collection.mutable.Iterable[(String, BasicType)] =  (parentExcludedScope.map((k,v) => k) zip parameters)
-                methodScopeFields ++=  (parentExcludedScope.map((k,v) => k) zip parameters)
+                methodScopeFields ++= (parentExcludedScope.map((k, v) => k) zip parameters)
 
                 val methodInstructions = methodScope(METHOD_INSTRUCTIONS).asInstanceOf[ArraySeq[BasicType]]
-                if(methodInstructions.nonEmpty)
-                  methodInstructions.take(methodInstructions.length - 1).foreach(statement =>statement.asInstanceOf[Exp].eval(methodScopeFields))
-                methodInstructions.last.asInstanceOf[Exp].eval(methodScopeFields)
+                if (methodInstructions.nonEmpty)
+                  methodInstructions.take(methodInstructions.length - 1).foreach(statement =>
+                    statement match {
+                      case statementExp: Exp => statementExp.eval(methodScopeFields)
+                      case statementExpExt: myDSLClassExt => statementExpExt.eval(methodScopeFields)
+                      case _: Any => Exception("Invalid entity in method: " + statement)
+                    }
+                    //                    statement.asInstanceOf[Exp].eval(methodScopeFields)
+                  )
+
+
+                methodInstructions.last match {
+
+                  case statementExp: Exp => statementExp.eval(methodScopeFields)
+                  case statementExpExt: myDSLClassExt => statementExpExt.eval(methodScopeFields)
+                  case _: Any => Exception("Invalid entity in method: " + methodInstructions.last)
+
+                }
+                //                methodInstructions.last.asInstanceOf[Exp].eval(methodScopeFields)
                 //                  methodInstructions.foreach(println) //for testing purposes only, uncomment above line when ready
               }
               else
@@ -516,19 +553,85 @@ object myDSLClassExt:
 
 
             case None =>
-              val instanceFields =  scope(FIELDS).asInstanceOf[mutableMapAny]
+              val instanceFields = scope(FIELDS).asInstanceOf[mutableMapAny]
               instanceFields.get(PARENT_INSTANCE) match {
                 case Some(parentInstance: mutableMapAny) =>
                   InvokeMethod(methodName, parameters).eval(parentInstance, SCOPE_CALL_TYPE_OUTER)
-                case None => throw Exception(methodName +" not found")
+                case None => throw Exception(methodName + " not found")
               }
             //                  val parentInstance = instanceMap(PARENT_INSTANCE).asInstanceOf[scala.collection.mutable.Map[String, BasicType]]
 
             //              }
 
           }
-        case _: Any => throw Exception("invalid command")
 
+        case ExceptionClassDef(className: String, arg: myDSLClassExt) =>
+
+          arg match {
+            case Field(varName, accessType, value*) =>
+              val currentScope: mutableMapAny = defineEntity(className, ArraySeq(arg))
+              currentScope += ENTITY_TYPE -> EntityType.EXCEPTION_CLASS
+              scope(CLASS_DEFINITION).asInstanceOf[mutableMapAny] += className -> currentScope
+
+            case _: Any => throw Exception("Exception classes can only have Fields")
+          }
+
+
+        case CatchException(exceptionClassName, catchClause, instructions*) =>
+          val methodScope: mutableMapAny = scala.collection.mutable.Map()
+          methodScope += "parent" -> scope
+          methodScope += FIELDS -> scala.collection.mutable.Map[String, BasicType]()
+          methodScope(FIELDS).asInstanceOf[mutableMapAny] += "parent" -> scope(FIELDS)
+          breakable {
+            for (exp <- instructions) {
+              exp match {
+                case ThrowException(exceptionClassDef: myDSLClassExt, operation: AssignField) =>
+                  exceptionClassDef match {
+                    case exceptionClass: ClassDef =>
+                      val classDef: mutableMapAny = exceptionClass.eval(scope).asInstanceOf[mutableMapAny]
+                      if(classDef(CLASS_NAME) == exceptionClassName)
+                        val alteredClassDef = operation.eval(classDef)
+
+                        methodScope(FIELDS).asInstanceOf[mutableMapAny] += "EXCEPTION_CLASS" -> alteredClassDef
+                        return catchClause.eval(methodScope)
+//                      break
+                      else
+                        throw Exception("Unhandled Exception '"+classDef(CLASS_NAME)+"' thrown")
+
+                    case _: Any => throw Exception("argument can only be ClassDef pointing to exception class")
+                  }
+                case statementExp: Exp => statementExp.eval(methodScope)
+              }
+            }
+          }
+        case AssignField(fieldName: String, value: BasicType)=>
+          scope(FIELDS).asInstanceOf[mutableMapAny] += fieldName -> value
+          scope
+        case Catch(varName, instructions*) =>
+          require (instructions.length >0)
+          val catchScope: mutableMapAny = scala.collection.mutable.Map()
+//          catchScope += "parent" -> scope
+          catchScope += FIELDS -> scala.collection.mutable.Map[String, BasicType]()
+//          catchScope(FIELDS).asInstanceOf[mutableMapAny] += "parent" -> scope(FIELDS)
+          catchScope(FIELDS).asInstanceOf[mutableMapAny] += varName -> scope(FIELDS).asInstanceOf[mutableMapAny]("EXCEPTION_CLASS")
+
+
+          instructions.take(instructions.length - 1).foreach {
+            case exp: Exp => exp.eval(catchScope)
+            case expExt: myDSLClassExt=> expExt.eval(catchScope)
+            case _: Any => throw Exception("Invalid instruction")
+          }
+
+          instructions.last match{
+            case exp: Exp => exp.eval(catchScope)
+            case expExt: myDSLClassExt=> expExt.eval(catchScope)
+            case _: Any => throw Exception("Invalid instruction")
+          }
+//          for(instr<-instructions){
+//            instr.eval(catchScope)
+//          }
+
+        case _: Any => throw Exception("invalid command")
 
       }
 
@@ -630,7 +733,7 @@ object myDSLClassExt:
           for(interfaceDef <- interfaceDefinitions){
             val superInterface =  interfaceDef.eval().asInstanceOf[mutableMapAny]
             superInterface(FIELDS).asInstanceOf[mutableMapAny].foreach((k,v)=>  concatenatedFields.get(k) match{
-              case Some(m)=> throw Exception("Duplicate field '"+k+"' found in multiple interfaces")z
+              case Some(m)=> throw Exception("Duplicate field '"+k+"' found in multiple interfaces")
               case None =>
                 concatenatedFields+= k->1
                 validInterfacesNames += superInterface(CLASS_NAME).asInstanceOf[String] -> superInterface
@@ -660,32 +763,45 @@ object myDSLClassExt:
   @main def runExt(): Unit =
 
     import myDSLClassExt.*
-    InterfaceDef("someInterface1", Field("a", AccessType.PUBLIC, Value(20)), Method("method1", AccessType.PUBLIC, ImplementationType.ABSTRACT, List())).eval()
-    ClassDef("someClassName1",
-      Field("x", AccessType.PRIVATE, Value(47)),
-      Constructor(Value(1)),
-      Method(
-        "method1",
-        AccessType.PUBLIC,
-        ImplementationType.CONCRETE,
-        List(),
-        Value(1)
-      )
-    ).eval()
+    ExceptionClassDef("someExceptionName", Field("message", AccessType.PUBLIC)).eval()
+    ExceptionClassDef("someExceptionName1", Field("message", AccessType.PUBLIC)).eval()
+    println(CatchException("someExceptionName",
+      Catch("exceptionVariable", Var("x")),
+      DeclareVar("x", Value(7)),
+//      ThrowException(ClassDef("someExceptionName1"), AssignField("message", "error found")),
+      Assign("x", Value(10))
+    ).eval())
+//    InterfaceDef("someInterface1", Field("a", AccessType.PUBLIC, Value(20)), Method("method1", AccessType.PUBLIC, ImplementationType.ABSTRACT, List())).eval()
+//    ClassDef("someClassName1",
+//      Field("x", AccessType.PRIVATE, Value(47)),
+//      Constructor(Value(1)),
+//      Method(
+//        "method1",
+//        AccessType.PUBLIC,
+//        ImplementationType.CONCRETE,
+//        List(),
+//        Value(1)
+//      )
+//    ).eval()
+//
+//    AbstractClassDef("AbsClass1",
+//      Field("y", AccessType.PUBLIC, Value(10)),
+//      Field("z", AccessType.PUBLIC, Value(23)),
+//      Method("method1",
+//        AccessType.PUBLIC,
+//        ImplementationType.ABSTRACT,
+//        List(),
+//      )
+//    ).eval()
+//    println("main abscall: "+UnInstantiableClass(ClassDef("AbsClass1"), GetField("z"), GetField("y")).eval())
 
-    AbstractClassDef("AbsClass1",
-      Field("y", AccessType.PUBLIC, Value(10)),
-      Method("method1",
-        AccessType.PUBLIC,
-        ImplementationType.ABSTRACT,
-        List()
-      )
-    ).eval()
-    ClassDef("someClassName1") Extends AbstractClassDef("AbsClass1")
-    ClassDef("someClassName1") Implements List(InterfaceDef("someInterface1"))
+//    ClassDef("someClassName1") Extends AbstractClassDef("AbsClass1")
+//    ClassDef("someClassName1") Implements List(InterfaceDef("someInterface1"))
+//
+//    DeclareInstance(InterfaceDef("someInterface1"),"inst1").eval()
+//    AssignInstance(NewObject(ClassDef("someClassName1")), "inst1").eval()
 
-    DeclareInstance(InterfaceDef("someInterface1"),"inst1").eval()
-    AssignInstance(NewObject(ClassDef("someClassName1")), "inst1").eval()
+
 
 
 

@@ -380,3 +380,52 @@ signatures differ only in return types?**
 
 - **Can an abstract class/interface be instantiated as anonymous concrete classes?** 
   - Instantiation has been limited to concrete class definition, therefore you cannot instantiate abstract class/interface as anonymous concrete classes.
+
+
+## HW4 Features
+- ### Conditions
+    assume an if-else structure in java
+    ```java
+  int x = 7;
+    if(x == 7)
+        x = 10
+    else
+        x = 20
+  ```
+  in myDSL that would look like
+  ```scala
+  If(Check(Var("x"), 7), //condition 
+      AnonScope(Assign("x", 10)), // statements to execute when condition is true
+      AnonScope(Assign("x", 20))) // statements to execute when condition is false
+
+  ```
+  code-blocks to execute when true/false are wrapped in AnonScope (Anonymous Scope)
+
+- ### Exception handling
+    Exception Handling in java would look like
+    ```java
+  
+    try{
+        int x = 7;
+        throw NumberFormatException();
+        x = 10;
+    }
+    catch(NumberFormatException e){
+        e.message();
+    }  
+   ```
+  in myDSL would look like:
+    ```scala
+    CatchException("NumberFormatException", //name of exception to handle
+        Catch("exceptionVariable", Instance("exceptionVariable", GetField("message"))), //statements to execute when exception is thrown 
+        DeclareVar("x", Value(7)), //
+        ThrowException(ClassDef("NumberFormatException"), AssignField("message", "forced error thrown")),
+        Assign("x", Value(10))
+      )
+  ```
+  
+    where ```NumberFormatException```  would have to be declared explicitly in the following way:
+    ```scala
+    ExceptionClassDef("someExceptionName", Field("message", AccessType.PUBLIC)).eval()
+   ```
+  
