@@ -36,112 +36,139 @@ object myDSL:
     case If(condition: Exp, thenClause: AnonScope, elseClause: AnonScope)
 
     //attribute scope allows switching to different scopes
-    def eval(scope: scala.collection.mutable.Map[String, Any] = bindingScope): BasicType =
+
+    def eval(scope: scala.collection.mutable.Map[String, Any] = bindingScope): Either[BasicType, BasicType] =
       this match {
-        case Value(i) => i
+        case Value(i) => Right(i)
         case Var(name) =>
           scope.get(name) match {
             case None =>
             // moving to outer-scope(if available) when variable is not found in current scope
             scope.get("parent") match {
                 case Some(parentScope: scala.collection.mutable.Map[String, Any]) => this.eval(parentScope)
-                case None => throw NoSuchElementException()
+                case None =>
+                  Left(this)
               }
 
-            case Some(value) => value
+            case Some(value) =>
+              Right(value)
           }
 
         case Check(exp1: Exp, exp2: Exp) =>
           val exp1Eval = exp1.eval(scope)
           val exp2Eval = exp2.eval(scope)
 
-          exp1Eval == exp2Eval
+          (exp1Eval,exp2Eval) match {
 
+            case (Right(exp1Value), Right(exp2Value)) => Right(exp1Value == exp2Value)
+            case (Left(exp1Error), Right(exp2Value)) => Left(Check(exp1, Value(exp2Value))) //what if Value is passed?
+            case (Right(exp1Value), Left(exp2Error)) => Left(Check(Value(exp1Value), exp2))
+            case (Left(exp1Error), Left(exp2Error)) => Left(Check(exp1, exp2))
+          }
+
+//          exp1Eval == exp2Eval
 
         case Assign(varName: String, value: Exp) =>
 
           scope.get(varName) match {
             // moving to outer-scope(if available) when variable is not found in current scope
             case None => scope("parent") match {
-              case None => throw Error("Variable could not be assigned: Variable does not exist")
+              case None => Left(Assign(varName, value)) //partial eval
               case parentScope: scala.collection.mutable.Map[String, Any] =>
                 this.eval(parentScope)
             }
-            case _: Any => scope += varName -> value.eval(scope)
+            case _: Any =>
+//             value.eval(scope)
+              scope += varName -> value.eval(scope).merge
+              Right(scope(varName))
 
           }
         //only allow declaration if variable doesn't already exist
         case DeclareVar(varName: String, value: Exp) => scope.get(varName) match {
-          case None => scope += varName -> value.eval(scope)
-          case _: Any => throw Error("Variable already exists")
+          case None =>
+            scope += varName -> value.eval(scope).merge
+            Right(scope)
+          case _: Any => throw Error("Variable already exists") // no partial evaluation here
         }
 
         //creates and returns a scala.collection.immutable.Set and initializes with any number of Values
-        case CreateSet(args*) => Set[Any]() ++ args.map(arg => arg.asInstanceOf[Exp].eval(scope)).toSet
+        case CreateSet(args*) =>
+          Right(Set[Any]() ++ args.map(arg => arg.asInstanceOf[Exp].eval(scope).merge).toSet)
 
         //insert only when set evaluates to type Set
         case Insert(set: Exp, args*) =>
           val setEval = set.eval(scope)
           setEval match {
-            case immutableSet: Set[Any] =>
-              immutableSet ++ args.map(arg => arg.asInstanceOf[Exp].eval(scope)).toSet
+            case Right(immutableSet: Set[Any]) =>
+             Right( immutableSet ++ args.map(arg => arg.asInstanceOf[Exp].eval(scope).merge).toSet)
 
-            case _: Any => throw InvalidTypeException("invalid parameter type: parameter set should evaluate to a Set")
+            case Left(value): Any => Left(this)
           }
 
         //delete only when set evaluates to type Set
         case Delete(set: Exp, args*) =>
           val setEval = set.eval(scope)
           setEval match {
-            case immutableSet: Set[Any] =>
-              immutableSet -- args.map(arg => arg.asInstanceOf[Exp].eval(scope)).toSet
+            case Right( immutableSet: Set[Any]) =>
+              Right(immutableSet -- args.map(arg => arg.asInstanceOf[Exp].eval(scope).merge).toSet)
 
-            case _: Any => throw InvalidTypeException("invalid parameter type: parameter set should evaluate to a Set")
+            case Left(value) => Left(this)
           }
 
           //only evaluates if both the arguments evaluate to Set
         case Union(set1: Exp, set2: Exp) =>
           (set1.eval(scope), set2.eval(scope)) match {
-            case (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>
-              immutableSet1.union(immutableSet2)
+            case (Right(immutableSet1: Set[Any]), Right(immutableSet2: Set[Any])) =>
+              Right(immutableSet1.union(immutableSet2))
+            case (Left(unevaluatedSet1), Right(immutableSet2: Set[Any])) => Left(Union(set1, Value(immutableSet2)))
+            case (Right(immutableSet1: Set[Any]), Left(unEvaluatedSet2)) => Left(Union(Value(immutableSet1), set2))
+            case (Left(unevaluatedSet1), Left(unEvaluatedSet2)) => Left(this)
 
-            case _: Any => throw InvalidTypeException("invalid parameter(s) type")
+//            case _: Any => throw InvalidTypeException("invalid parameter(s) type")
           }
 
         //only evaluates if both the arguments evaluate to Set
         case Diff(set1: Exp, set2: Exp) =>
           (set1.eval(scope), set2.eval(scope)) match {
-            case (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>
-              immutableSet1.diff(immutableSet2)
-
-            case _: Any => throw InvalidTypeException("invalid parameter(s) type")
+            case (Right(immutableSet1: Set[Any]), Right(immutableSet2: Set[Any])) =>
+              Right(immutableSet1.diff(immutableSet2))
+            case (Left(unevaluatedSet1), Right(immutableSet2: Set[Any])) => Left(Diff(set1, Value(immutableSet2)))
+            case (Right(immutableSet1: Set[Any]), Left(unEvaluatedSet2)) => Left(Diff(Value(immutableSet1), set2))
+            case (Left(unevaluatedSet1), Left(unEvaluatedSet2)) => Left(this)
+//            case _: Any => throw InvalidTypeException("invalid parameter(s) type")
           }
 
         //only evaluates if both the arguments evaluate to Set
         case Intersection(set1: Exp, set2: Exp) =>
           (set1.eval(scope), set2.eval(scope)) match {
-            case (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>
-              immutableSet1.intersect(immutableSet2)
-
-            case _: Any => throw InvalidTypeException("invalid parameter(s) type")
+            case (Right(immutableSet1: Set[Any]), Right(immutableSet2: Set[Any])) =>
+              Right(immutableSet1.intersect(immutableSet2))
+            case (Left(unevaluatedSet1), Right(immutableSet2: Set[Any])) => Left(Intersection(set1, Value(immutableSet2)))
+            case (Right(immutableSet1: Set[Any]), Left(unEvaluatedSet2)) => Left(Intersection(Value(immutableSet1), set2))
+            case (Left(unevaluatedSet1), Left(unEvaluatedSet2)) => Left(this)
+//            case _: Any => throw InvalidTypeException("invalid parameter(s) type")
           }
 
         //only evaluates if both the arguments evaluate to Set
         case SymmetricDiff(set1: Exp, set2: Exp) =>
           (set1.eval(scope), set2.eval(scope)) match {
-            case (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>
-              immutableSet1.union(immutableSet2).diff(immutableSet1.intersect(immutableSet2))
-
-            case _: Any => throw InvalidTypeException("invalid parameter(s) type")
+            case (Right(immutableSet1: Set[Any]), Right(immutableSet2: Set[Any])) =>
+              Right(immutableSet1.union(immutableSet2).diff(immutableSet1.intersect(immutableSet2)))
+            case (Left(unevaluatedSet1), Right(immutableSet2: Set[Any])) => Left(SymmetricDiff(set1, Value(immutableSet2)))
+            case (Right(immutableSet1: Set[Any]), Left(unEvaluatedSet2)) => Left(SymmetricDiff(Value(immutableSet1), set2))
+            case (Left(unevaluatedSet1), Left(unEvaluatedSet2)) => Left(this)
+//            case _: Any => throw InvalidTypeException("invalid parameter(s) type")
           }
 
         //only evaluates if both the arguments evaluate to Set
         case Product(set1: Exp, set2: Exp) =>
           (set1.eval(scope), set2.eval(scope)) match {
-            case (immutableSet1: Set[Any], immutableSet2: Set[Any]) =>
-              immutableSet1.flatMap(i1 => immutableSet2.map(i2 => (i1, i2)))
-
-            case _: Any => throw InvalidTypeException("invalid parameter(s) type")
+            case (Right(immutableSet1: Set[Any]), Right(immutableSet2: Set[Any])) =>
+              Right(immutableSet1.flatMap(i1 => immutableSet2.map(i2 => (i1, i2))))
+            case (Left(unevaluatedSet1), Right(immutableSet2: Set[Any])) => Left(Product(set1, Value(immutableSet2)))
+            case (Right(immutableSet1: Set[Any]), Left(unEvaluatedSet2)) => Left(Product(Value(immutableSet1), set2))
+            case (Left(unevaluatedSet1), Left(unEvaluatedSet2)) => Left(this)
+//            case _: Any => throw InvalidTypeException("invalid parameter(s) type")
           }
 
         case Scope(scopeName, exp) =>
@@ -170,67 +197,79 @@ object myDSL:
           //pairing anonymous scope with random key
           scope += (Random.alphanumeric take 10).mkString -> newAnonScope
 
-          exp.foreach(e => e.eval(newAnonScope))
+          Right(exp.map(e => e.eval(newAnonScope).merge))
+//          Right(scope)
 
 //          exp.eval(newAnonScope)
 
 
         case SetMacro(macroName, exp: Exp) =>
           scope.get(MACRO_KEY) match {
-            case Some(scopeMacroMap) =>
+            case Some(scopeMacroMap: scala.collection.mutable.Map[String, Any]) =>
               //possibly re-writing  macros
-              scopeMacroMap.asInstanceOf[scala.collection.mutable.Map[String, Any]].put(macroName, exp)
-            case anyElse: Any =>
+              scopeMacroMap.put(macroName, exp)
+              Right(scopeMacroMap(macroName))
+            case None: Any =>
               throw Error("Could not find specified macro ")
 
           }
 
         case GetMacro(macroName) =>
-          scope(MACRO_KEY) match {
-            case scopeMacroMap: scala.collection.mutable.Map[String, Any] =>
-              scopeMacroMap(macroName) match {
-                case value: Exp =>
+          scope.get(MACRO_KEY) match {
+            case Some(scopeMacroMap: scala.collection.mutable.Map[String, Any] )=>
+              scopeMacroMap.get(macroName) match {
+                case Some(value: Exp) =>
                   value.eval(scope)
-                case None => throw Error("Could not evaluate Macro")
+                case None => Left(this)
               }
             case None => throw Error("Could not find specified macro")
           }
         case If(condition: Exp, thenClause, elseClause) =>
           val conditionEval = condition.eval(scope)
           conditionEval match{
-            case conditionBool: Boolean =>
+            case Right(conditionBool: Boolean) =>
               if(conditionBool)
-                AnonScope(thenClause).eval(scope)
+                thenClause.eval(scope)
               else
-                AnonScope(elseClause).eval(scope)
-            case _:Any =>
-              throw Exception("condition in If should evaluate to Boolean")
+                elseClause.eval(scope)
+            case Left(value: Exp) =>
+
+              Left(If(value,
+                AnonScope(
+                  thenClause.eval(scope).merge
+                    .asInstanceOf[scala.collection.immutable.ArraySeq[BasicType]]
+                    .map[Exp] {
+                      case exp: Exp => exp
+                      case e => Value(e)
+                    }:_*
+                ),
+                AnonScope(
+                  elseClause.eval(scope).merge
+                  .asInstanceOf[scala.collection.immutable.ArraySeq[BasicType]]
+                    .map[Exp] {
+                      case exp: Exp => exp
+                      case e => Value(e)
+                    }:_*
+                ))
+              )
+//              Left(this)
           }
       }
 
+  trait myDSLExp:
+    def map(f: Exp => Exp): Exp
+
+  case class myDSLExpMonad(set: Exp) extends myDSLExp{
+    override def map(f: Exp => Exp): Exp = {
+      f(set)
+    }
+  }
+
+
   @main def runExp(): Unit =
     import Exp.*
-//    DeclareVar("a", CreateSet(Value(1), Value(2), Value(3))).eval()
-//    DeclareVar("b", CreateSet(Value(3), Value(4), Value(5))).eval()
-//    Assign("a",Insert(Var("a"), Value(4))).eval()
-//    println(Var("a").eval())
-//    DeclareVar("a", Value(5)).eval()
-//    DeclareVar("b", Value(1)).eval()
-//    If(Var("a").eval() == 2,Assign("b", CreateSet(Value(1), Value(2), Value(3))), Assign("b", CreateSet(Value(2), Value(3), Value(4))) ).eval()
-//    println(Var("b").eval())
 
-//    DeclareVar("x", Value(3)).eval()
-//    println(Check(Var("a"), Value(3)).eval())
 
-//      AnonScope(DeclareVar("x", CreateSet(Value(1),Value(2),Value(3))), DeclareVar("y", CreateSet(Value(3),Value(4),Value(5))), Union(Var("x"), Var("y"))).eval()
-      DeclareVar("x", Value(2)).eval()
-
-      If(Check(Var("x"), Value(1)),
-        AnonScope(DeclareVar("y", CreateSet(Value(1),Value(2),Value(3))), Assign("x", CreateSet(Value(3),Value(4),Value(5)))),
-        AnonScope(Assign("x", Value(10))),
-      ).eval()
-
-      println(Var("x").eval())
 
 
 
